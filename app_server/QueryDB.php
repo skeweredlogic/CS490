@@ -2,7 +2,7 @@
 
 function QueryDB($data, $code) {
 	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_URL, "http://web.njit.edu/~rdl4/app.php");
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
