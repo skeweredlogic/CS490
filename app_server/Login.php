@@ -32,11 +32,12 @@ class Login {
 
 	private function backendlogin($user, $pass) {
 		$ch = curl_init();
-		$url = "http://web.njit.edu/~rdl4/Login.php";
+		$url = "http://web.njit.edu/~rdl4/app.php";
 		$senddata = json_encode(array(
 			"uid" => $user,
 			"pass" => $pass,
 			"cmd" => "login"));
+
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $senddata);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -52,7 +53,7 @@ class Login {
 		}
 		return $success;
 	}
-	
+
 }
 
 ?>
