@@ -13,6 +13,7 @@ http://www.codingbat.com
 The milestones for the project are:
 
 October 6th: Alpha 5% (Skeleton MVC - Login authentication system.)
+Login via both NJIT authentication (choose your own method) and via a backend user database
 
 
 October 27th: Beta 15% (Should have at least the basic/core functionality. In addition to assigning roles based on login, you must implement four use cases as a minimum: 1) an instructor can create a new question and add it to the question bank, 2) an instructor can select questions from the question bank to make up an exam, 3) a student can take the exam, and 4) a student can check score and feedback for automatically graded exam.)	
@@ -35,3 +36,12 @@ You must follow a Model View Controller architecture. Each student will be respo
 We will develop a communication protocol that all groups will be required to employ. Post requests will be used for requests; XML or JSON will be used for replies.
 
 You will lose points if you fail to comply with any of the requirements or constraints specified above
+
+
+
+
+Additional caveats discussed during lecture:
+No routing libraries such as Toro.php
+No frameworks or major tools (jQuery, AngularJS, Node.js, etc.)
+Basically, plain old vanilla PHP, CSS, HTML, and ECMAScript
+All POST requests should hit one central application, from which the middleware and backend will route the requests
