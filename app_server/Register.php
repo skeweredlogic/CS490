@@ -18,9 +18,11 @@ class Register {
 		$result = json_decode(QueryDB($send, $code),true);
 		$success = $result['status'] === 'success';
 		if ($success){
-			echo "{\"message\":\"success\"}";
+			die(json_encode(array(
+				"message" => "success")));
 		}else{
-			echo "{\"message\":\"failure\"}";
+			die(json_encode(array(
+				"message" => "failure")));
 		}
 
 	}
