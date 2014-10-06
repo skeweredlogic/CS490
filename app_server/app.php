@@ -2,6 +2,7 @@
 
 require 'Login.php';
 require 'Register.php';
+require 'QueryDB.php';
 
 $data = json_decode(file_get_contents('php://input'),true);
 $fun;
