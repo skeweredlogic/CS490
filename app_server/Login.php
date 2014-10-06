@@ -2,10 +2,11 @@
 class Login {
 
 	public function post($data) {
-		$user = str_replace("@njit.edu", "", $data['user']);
+		$user = $data['user'];
 		$pass = $data['pass'];
 
 		$success_backend = $this->backendlogin($user, $pass);
+		$user = str_replace("@njit.edu", "", $user);
 		$success_njit = $this->njitlogin($user, $pass);
 
 		die(json_encode(array(
@@ -37,20 +38,20 @@ class Login {
 			"uid" => $user,
 			"pass" => $pass,
 			"cmd" => "login"));
-
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $senddata);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		$result = curl_exec($ch);
 		$return_code = (string)curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		curl_close($ch);
 		$success = $return_code === "200";
+		curl_close($ch);
 		if ($success) {
 			$success = 1;
 		}
 		else {
 			$success = 0;
 		}
+
 		return $success;
 	}
 
