@@ -5,8 +5,8 @@ class Login {
 		$user = str_replace("@njit.edu", "", $data['user']);
 		$pass = $data['pass'];
 
-		$success_njit = $this->njitlogin($user, $pass);
 		$success_backend = $this->backendlogin($user, $pass);
+		$success_njit = $this->njitlogin($user, $pass);
 
 		die(json_encode(array(
 			"njit" => $success_njit,
