@@ -41,7 +41,7 @@ You will lose points if you fail to comply with any of the requirements or const
 
 
 **Additional caveats discussed during lecture:**
-No routing libraries such as Toro.php
-No frameworks or major tools (jQuery, AngularJS, Node.js, etc.)
-Basically, plain old vanilla PHP, CSS, HTML, and ECMAScript
-All POST requests should hit one central application, from which the middleware and backend will route the requests
+-No routing libraries such as Toro.php
+-No frameworks or major tools (jQuery, AngularJS, Node.js, etc.)
+-Basically, plain old vanilla PHP, CSS, HTML, and ECMAScript
+-All POST requests should hit one central application, from which the middleware and backend will route the requests
