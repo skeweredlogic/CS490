@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="controller.js"></script>
+    <title>Login Page</title>
+    <script type="text/javascript">$(".alert").alert()</script>
+</head>
+<body>
+<button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addMultiModal" style="width: 120px; margin-top: 10px; margin-left: 95px !important" id="addMultiModBtn">
+    derp
+</button>
+</body>
+
+<!--modal add multiple choice-->
+
+<div class="modal fade" id="addMultiModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">Add multiple choice question</h4>
+            </div>
+            <div class="modal-body" id="modalMultiQuestions">
+                <div class="input-group">
+                    <span class="input-group-addon">Question</span>
+                    <input class="form-control" name="question" type="text" placeholder="question" required>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon">Answer</span>
+                    <input class="form-control" name="answer" type="text" placeholder="answer" required>
+                </div>
+                <div class="input-group" id="multiChoice">
+                    <span class="input-group-addon">Choice</span>
+                    <input class="form-control" name="choice" type="text" placeholder="choice" required>
+                </div>
+                <div class="input-group" id="multiChoice">
+                    <span class="input-group-addon">Choice</span>
+                    <input class="form-control" name="choice" type="text" placeholder="choice" required>
+                </div>
+                <div class="input-group" id="multiChoice">
+                    <span class="input-group-addon">Choice</span>
+                    <input class="form-control" name="choice" type="text" placeholder="choice" required>
+                </div>
+                
+                <div id="addNewMultiField">
+                    <button class="btn btn-default pull-right" type="button" onclick="addMultiField();"></button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" >Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function addMultiField(){
+       // var multiQuestion = document.getElementById("modalMultiQuestions");
+        var newChoice = document.getElementById("multiChoice");
+        var cloneChoice = newChoice.cloneNode(true);
+        var multiQuestion = document.getElementById("modalMultiQuestions").lastChild;
+        document.insertBefore(cloneChoice,multiQuestion);
+
+    }
+
+
+</script>
+
+
+<!--end add multiple choice-->
+</html>
