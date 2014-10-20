@@ -1,27 +1,22 @@
 /**
  * Created by frosti on 10/17/2014.
  */
-function sendOver(command,data){
+var request;
+var resp;
 
-    var sPackage = {'command':command,'data':data};
+
+function sendOver(command,data,callback){
+
+    var sPackage;
+    sPackage = {'cmd':command,'data':data};
     console.log("package");
     console.log(sPackage);
     sPackage = JSON.stringify(sPackage);
     console.log(sPackage);
-    console.log("why?")
-    var request = new XMLHttpRequest();
+    request = new XMLHttpRequest();
     request.open('POST', '../../~rj252/app_server/app.php', true);
 
-    request.onload = function() {
-        if (request.status >= 200 && request.status < 400){
-            resp = JSON.parse(request.responseText);
-            console.log(resp);
-        }
-        else {
-            //connection error
-            console.log("request status error");
-        }
-    };
+    request.onreadystatechange = callback;
 
     request.onerror = function() {
         console.log("request error");
@@ -37,7 +32,32 @@ function sendOver(command,data){
 function loginSend(){
     var username = document.getElementById('username').value;
     var password = document.getElementById('password').value;
-    var credentials = {'username':username,'password':password};
+    var credentials = {'user':username,'pass':password};
 
-    sendOver('login',credentials);
+    sendOver('login',credentials,function(){
+            if (request.status == 200 && request.readyState == 4){
+                resp = JSON.parse(request.responseText);
+                console.log(resp);
+                if (resp.backend==1){
+                    document.getElementById("alertBar").style.display="none";
+                    $('#loginModal').modal('hide');
+                }
+                else if (resp.backend==0){
+                  var alertBar = document.getElementById("alertBar");
+                    alertBar.className="alert alert-danger";
+                    alertBar.style.display="";
+                    alertBar.innerHTML="Invalid credentials";
+                    document.getElementById("password").parentNode.parentNode.appendChild(alertBar);
+                }
+
+                else if (resp.backend==-1){
+                    var alertBar = document.getElementById("alertBar")
+                    alertBar.className="alert alert-warning"
+                    alertBar.style.display="";
+                    alertBar.innerHTML="Connection error";
+                    document.getElementById("password").parentNode.parentNode.appendChild(alertBar);
+                }
+            }
+    }
+    );
 }
