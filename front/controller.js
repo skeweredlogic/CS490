@@ -1,6 +1,52 @@
 /**
  * Created by frosti on 10/17/2014.
  */
+
+var junkBank = [
+{"3434":
+    {
+        "type": "multi",
+        "question": "jpifsjdfpi?",
+        "answer": "fsdfasdfs",
+        'response': 'asfdasd',
+        'choice1': 'gdfgdf',
+        'choice2': 'gdfgd6756f',
+        'choice3': 'g4534dfgdf'
+    }
+
+    },
+{'gg45':
+    {
+        'type': 'multi',
+        'question': 'moeb8pi?',
+        'answer': 'fsdfasdfs',
+        'response': 'asfdasd',
+        'choice1': 'gdfgdf',
+        'choice2': 'gdfgd6756f',
+        'choice3': 'g4534dfgdf'
+    }
+
+    },
+{'r4r4':
+    {
+        'type': 'multi',
+        'question': 'pokp23kpi?',
+        'answer': 'fsdfasdfs',
+        'response': 'asfdasd',
+        'choice1': 'gdfgdf',
+        'choice2': 'gdfgd6756f',
+        'choice3': 'g4534dfgdf'
+    }
+
+}
+];
+
+junkBank =JSON.stringify(junkBank);
+console.log(junkBank);
+junkBank =JSON.parse(junkBank);
+console.log(junkBank);
+
+
 function sendOver(command,data,callback){
 
     var sPackage;
@@ -98,7 +144,55 @@ function createCoding(){
         'feedback':document.getElementById("multiChoiceAnswerFeedback").value
     };
 
-    sendOver('CreateQuestion',question,function(resp){
+    sendOver('createQuestion',question,function(resp){
         console.log(resp);
     });
+}
+
+console.log(junkBank.type);
+
+function pullBank(){
+    console.log(junkBank.length);
+    for (var i=0;i<20;i++){
+        console.log('why...');
+
+        var obj = junkBank[i];
+        for(var key in obj){
+
+            var attr = key;
+            var attrVal = obj[key];
+            console.log(attr," :  ",attrVal);
+            switch (attrVal.type){
+                case 'multi':
+                    var multiDummy=document.getElementById("multiDummy");
+                    var clonedNode = multiDummy.cloneNode(multiDummy);
+                    clonedNode.setAttribute("name",attrVal.question);
+                    document.getElementById('outerBoarder').appendChild(clonedNode);
+                    break;
+                case 'tf':
+                    break;
+                case 'code':
+                    break;
+            }
+
+        }
+    };
+
+    /*sendOver('bank', null , function(resp){
+        for (var i=0;i<junkBank.length;i++){
+            console.log(junkBank[i]);
+        };
+    });*/
+}
+
+function createExam(){
+
+}
+
+function currentExams(){
+
+}
+
+function getExam(){
+
 }

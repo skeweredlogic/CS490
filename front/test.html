@@ -15,11 +15,11 @@
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="outerBoarder">
 
     <!-- multiple choice template -->
 
-    <div class="panel panel-default">
+    <div class="panel panel-default" id="multiDummy">
         <div class="panel-heading">
             <h3 class="panel-title">Multiple choice</h3>
         </div>
@@ -54,7 +54,7 @@
 
     <!-- true false template-->
 
-    <div class="panel panel-default">
+    <div class="panel panel-default" id="tfDummy">
         <div class="panel-heading">
             <h3 class="panel-title">True/False</h3>
         </div>
@@ -76,7 +76,7 @@
     <!-- end true false template-->
 
     <!-- code template-->
-    <div class="panel panel-default">
+    <div class="panel panel-default" id="codeDummy">
         <div class="panel-heading">
             <h3 class="panel-title">Coding</h3>
         </div>
@@ -86,6 +86,9 @@
     </div>
     <!-- end code template-->
 
+    <button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addMultiModal" onclick="pullBank();">
+        write junkBank to console
+    </button>
 
 </div>
 
