@@ -14,9 +14,12 @@
     <script type="text/javascript">$(".alert").alert()</script>
 </head>
 <body>
-<button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addMultiModal" style="width: 120px; margin-top: 10px; margin-left: 95px !important" id="addMultiModBtn">
-    Add True/False
-</button>
+<div class="container">
+
+    <button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addMultiModal" style="width: 120px; margin-top: 10px; margin-left: 95px !important" id="addMultiModBtn">
+        Add True/False
+    </button>
+</div>
 </body>
 
 <!--modal add multiple choice-->
@@ -33,10 +36,13 @@
                     <span class="input-group-addon">Question</span>
                     <input class="form-control" name="question" type="text" placeholder="question" required>
                 </div>
-                <div>
-                    <input type="radio" name="truefalse" value="true" style="display:inline">True
-                    <input type="radio" name="truefalse" value="false"  style="display:inline">False
-                </div>
+
+                <label class="radio-inline">
+                    <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"> True
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2"> False
+                </label>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -45,7 +51,6 @@
         </div>
     </div>
 </div>
-
 
 <!--end add multiple choice-->
 </html>
