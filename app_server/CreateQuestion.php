@@ -21,6 +21,7 @@ class CreateQuestion {
 			}
 			elseif ($return_code === "500") {
 				die(json_encode(array(
+					http_response_code(500);
 					"status" => -1)));
 			}
 			else {
