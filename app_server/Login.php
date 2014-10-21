@@ -30,12 +30,15 @@ class Login {
 			$_SESSION['login'] = true;
 			$_SESSION['type'] = $result['type'];
 			$_SESSION['uid'] = $user;
+			$message = "success";
 		}
 		elseif ($return_code === "500") {
 			$success = -1;
+			$message = "server error";
 		}
 		else {
 			$success = 0;
+			$message = "Invalid credentials";
 		}
 
 		die(json_encode(array(

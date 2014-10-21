@@ -17,16 +17,19 @@ class CreateQuestion {
 			$success = $result['status'] === 1 && $return_code === "200";
 			if($success) {
 				die(json_encode(array(
-					"status" => 1)));
+					"status" => 1,
+					"message" => "Question successfully added")));
 			}
 			elseif ($return_code === "500") {
 				die(json_encode(array(
 					http_response_code(500);
-					"status" => -1)));
+					"status" => -1,
+					"message" => "server error")));
 			}
 			else {
 				die(json_encode(array(
-					"status" => 0)));
+					"status" => 0,
+					"message" => "Failed to add question")));
 			}
 		}
 		else {

@@ -19,10 +19,12 @@ class Register {
 		$success = $result['status'] === 1;
 		if ($success){
 			die(json_encode(array(
-				"status" => 1)));
+				"status" => 1,
+				"message" => "Registered successfully")));
 		}else{
 			die(json_encode(array(
-				"status" => 0)));
+				"status" => 0),
+				"message" => "there was an error somewhere"));
 		}
 
 	}
