@@ -3,42 +3,43 @@
  */
 
 var junkBank = [
-{"3434":
+    {"eid":"restinpepperonis"},
+    {"3434":
     {
         "type": "multi",
         "question": "jpifsjdfpi?",
         "answer": "fsdfasdfs",
-        'response': 'asfdasd',
+        'feedback': 'asfdasd',
         'choice1': 'gdfgdf',
         'choice2': 'gdfgd6756f',
         'choice3': 'g4534dfgdf'
     }
 
     },
-{'gg45':
+    {'gg45':
     {
-        'type': 'multi',
+        'type': 'tf',
         'question': 'moeb8pi?',
         'answer': 'fsdfasdfs',
-        'response': 'asfdasd',
+        'feedback': 'asfdasd',
         'choice1': 'gdfgdf',
         'choice2': 'gdfgd6756f',
         'choice3': 'g4534dfgdf'
     }
 
     },
-{'r4r4':
+    {'r4r4':
     {
-        'type': 'multi',
+        'type': 'code',
         'question': 'pokp23kpi?',
         'answer': 'fsdfasdfs',
-        'response': 'asfdasd',
+        'feedback': 'asfdasd',
         'choice1': 'gdfgdf',
         'choice2': 'gdfgd6756f',
         'choice3': 'g4534dfgdf'
     }
 
-}
+    }
 ];
 
 junkBank =JSON.stringify(junkBank);
@@ -60,8 +61,16 @@ function sendOver(command,data,callback){
 
     request.onreadystatechange = function() {
         if (request.status == 200 && request.readyState == 4){
-            resp = JSON.parse(request.responseText);
+            var resp = JSON.parse(request.responseText);
             callback(resp);
+        }
+        if (request.status == 401 && request.readyState == 4){
+            var noSession = JSON.parse(request.responseText);
+            console.log("no session", noSession);
+        }
+        if (request.status == 500 && request.readyState ==4){
+            var servedError = JSON.parse(request.responseText)
+            console.log("server error", servedError)
         }
     };
 
@@ -119,7 +128,7 @@ function createMultipleChoice(){
     };
 
     sendOver('CreateQuestion',question,function(resp){
-            console.log(resp);
+        console.log(resp);
     });
 }
 
@@ -140,7 +149,7 @@ function createCoding(){
     var question ={
         'type':'code',
         'question':document.getElementById("multiChoiceQuestion").value,
-        'answer':document.getElementById("multiChoiceAnswer").value,
+        'expectedOutput':document.getElementById("multiChoiceAnswer").value,
         'feedback':document.getElementById("multiChoiceAnswerFeedback").value
     };
 
@@ -152,37 +161,12 @@ function createCoding(){
 console.log(junkBank.type);
 
 function pullBank(){
-    console.log(junkBank.length);
-    for (var i=0;i<20;i++){
-        console.log('why...');
-
-        var obj = junkBank[i];
-        for(var key in obj){
-
-            var attr = key;
-            var attrVal = obj[key];
-            console.log(attr," :  ",attrVal);
-            switch (attrVal.type){
-                case 'multi':
-                    var multiDummy=document.getElementById("multiDummy");
-                    var clonedNode = multiDummy.cloneNode(multiDummy);
-                    clonedNode.setAttribute("name",attrVal.question);
-                    document.getElementById('outerBoarder').appendChild(clonedNode);
-                    break;
-                case 'tf':
-                    break;
-                case 'code':
-                    break;
-            }
-
-        }
-    };
 
     /*sendOver('bank', null , function(resp){
-        for (var i=0;i<junkBank.length;i++){
-            console.log(junkBank[i]);
-        };
-    });*/
+     for (var i=0;i<junkBank.length;i++){
+     console.log(junkBank[i]);
+     };
+     });*/
 }
 
 function createExam(){
@@ -194,5 +178,133 @@ function currentExams(){
 }
 
 function getExam(){
+   // sendOver('getExam', 'some eid would go here',function(resp){
 
+        console.log(junkBank.length);
+        for (var i = 0; i < 20; i++) {
+            //console.log('why...');
+
+            var obj = junkBank[i];
+            for (var key in obj) {
+
+                var attrName = key;
+                var attrVal = obj[key];
+                /*console.log(attrName," :  ",attrVal);
+                console.log(attrName);*/
+               if (attrName=="eid"){
+                   var eidSetter =document.getElementById("submitExam");
+                      eidSetter.dataset.eid=attrVal;
+               }
+                switch (attrVal.type) {
+                    case 'multi':
+                        var multiDummy = document.getElementById("multiDummy");
+                        var multiCloned = multiDummy.cloneNode(true);
+                        multiCloned.setAttribute("id", key);
+                        var theRadios;
+                        theRadios = multiCloned.getElementsByTagName("input");
+                        for (var w = 0; w < theRadios.length; w++) {
+                            var radioNamer = theRadios[w];
+                            radioNamer.setAttribute("name", key);
+                        }
+                        theRadios = multiCloned.getElementsByTagName("label");
+                        theRadios[1].innerHTML += attrVal.choice2;
+                        theRadios[1].setAttribute("data-choice",attrVal.choice2);
+                        theRadios[2].innerHTML += attrVal.choice3;
+                        theRadios[2].setAttribute("data-choice",attrVal.choice3);
+
+                        if (attrVal.choice4) {
+                            theRadios[3].innerHTML += attrVal.choice4;
+                            theRadios[3].setAttribute("data-choice",attrVal.choice4);
+                            theRadios[0].innerHTML += attrVal.choice1;
+                            theRadios[0].setAttribute("data-choice",attrVal.choice1);
+
+                        }
+                        else if (attrVal.answer) {
+                            theRadios[0].innerHTML += attrVal.answer;
+                            theRadios[0].setAttribute("data-choice",attrVal.answer);
+
+                            theRadios[3].innerHTML += attrVal.choice1;
+                            theRadios[3].setAttribute("data-choice",attrVal.choice1);
+
+                        }
+
+                        theRadios = multiCloned.getElementsByTagName("h3");
+                        theRadios[0].innerHTML=attrVal.question;
+
+
+                        document.getElementById('outerBoarder').appendChild(multiCloned);
+                        break;
+                    case 'tf':
+                        var tfDummy = document.getElementById("tfDummy");
+                        var tfCloned = tfDummy.cloneNode(true);
+                        tfCloned.setAttribute("id", key);
+                        var tfRadios;
+                        tfRadios = tfCloned.getElementsByTagName("input");
+                        for (var tfRadioCounter = 0; tfRadioCounter < tfRadios.length; tfRadioCounter++) {
+                            var tfRadioNamer = tfRadios[tfRadioCounter];
+                            tfRadioNamer.setAttribute("name", key);
+                        }
+                        tfRadios = tfCloned.getElementsByTagName("h3");
+                        tfRadios[0].innerHTML=attrVal.question;
+
+                        document.getElementById('outerBoarder').appendChild(tfCloned);
+                        break;
+                    case 'code':
+                        var codeDummy = document.getElementById("codeDummy");
+                        var codeCloned = codeDummy.cloneNode(true);
+                        codeCloned.setAttribute("id", key);
+                        var codeTextArea;
+                        codeTextArea = codeCloned.getElementsByTagName("p");
+                        codeTextArea[0].setAttribute("name", key);
+
+                        var codeQuestion= codeCloned.getElementsByTagName("h3");
+                        codeQuestion[0].innerHTML=attrVal.question;
+
+                        document.getElementById('outerBoarder').appendChild(codeCloned);
+                        break;
+                }
+
+            }
+        }
+
+
+ //   });
+
+}
+
+function postExam(){
+    var eid=document.getElementById('submitExam').dataset.eid;
+    var answers={};
+    answers['cmd']='answered';
+    var radios = document.getElementsByTagName("input");
+    for (i=0; i<radios.length;i++){
+        if (radios[i].checked){
+            // have to get name and save with pair
+            var radioName= radios[i].getAttribute("name");
+            var radioID= radios[i].getAttribute("id");
+            var radioDataChoice=radios[i].parentNode.getAttribute("data-choice");
+            if (radioID=="falsetrue"){
+                answers[radioName]='true';
+            }
+            else if (radioID=="falsefalse"){
+                answers[radioName]='false';
+            }
+            else{
+                answers[radioName]=radioDataChoice;
+            }
+        }
+    }
+    var codeAreas = document.getElementsByTagName("p");
+    for (x=0; x<=codeAreas; x++){
+        var codeAreaName=codeAreas[x].getAttribute("name");
+        console.log("step1");
+        if (codeAreaName!="codeDummy"){
+            console.log('step 2');
+            answers[codeAreaName]=codeAreas[x].innerhtml;
+        }
+    }
+
+    console.log(answers);
+    answers=JSON.stringify(answers);
+    console.log(answers);
 }

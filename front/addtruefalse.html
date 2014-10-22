@@ -34,19 +34,19 @@
             <div class="modal-body" id="modalMultiQuestions">
                 <div class="input-group">
                     <span class="input-group-addon">Question</span>
-                    <input class="form-control" name="question" type="text" placeholder="question" required>
+                    <input class="form-control" name="question" type="text" placeholder="tfQuestion" required>
                 </div>
 
                 <label class="radio-inline">
-                    <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"> True
+                    <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="tfTrue"> True
                 </label>
                 <label class="radio-inline">
-                    <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2"> False
+                    <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="tfFalse"> False
                 </label>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" >Add</button>
+                <button type="button" class="btn btn-primary" onclick="createTrueFalse();">Add</button>
             </div>
         </div>
     </div>
