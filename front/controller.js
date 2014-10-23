@@ -1,6 +1,11 @@
 /**
  * Created by frosti on 10/17/2014.
  */
+var outerBoarder;
+
+window.onload= function() {
+    outerBoarder = document.getElementById("outerBoarder");
+};
 
 var junkBank = [
     {"eid":"restinpepperonis"},
@@ -42,10 +47,50 @@ var junkBank = [
     }
 ];
 
-junkBank =JSON.stringify(junkBank);
-console.log(junkBank);
-junkBank =JSON.parse(junkBank);
-console.log(junkBank);
+/*junkBank =JSON.stringify(junkBank);
+ console.log(junkBank);
+ junkBank =JSON.parse(junkBank);
+ console.log(junkBank);*/
+
+var junkExams =[
+    {'545':
+    {
+        'named':'exam1',
+        'released':'nr',
+        'grade': '85'
+
+    }
+    },
+    {'123':
+    {
+        'named':'exam2',
+        'released':'nr',
+        'grade': '44'
+
+    }
+    },
+    {'783':
+    {
+        'named':'exam3',
+        'released':'nr',
+        'grade': '85'
+
+    }
+    },
+    {'234':
+    {
+        'named':'exam4',
+        'released':'nr',
+        'grade': '-1'
+
+    }
+    }
+];
+
+junkExams=JSON.stringify(junkExams);
+ console.log(junkExams);
+junkExams =JSON.parse(junkExams);
+ console.log(junkExams);
 
 
 function sendOver(command,data,callback){
@@ -66,10 +111,11 @@ function sendOver(command,data,callback){
         }
         if (request.status == 401 && request.readyState == 4){
             var noSession = JSON.parse(request.responseText);
+            $('#loginModal').modal('show');
             console.log("no session", noSession);
         }
         if (request.status == 500 && request.readyState ==4){
-            var servedError = JSON.parse(request.responseText)
+            var servedError = JSON.parse(request.responseText);
             console.log("server error", servedError)
         }
     };
@@ -91,24 +137,20 @@ function loginSend(){
     var credentials = {'user':username,'pass':password};
 
     sendOver('login',credentials,function(resp){
-            console.log(resp);
+           // console.log(resp);
             if (resp.backend==1){
-                document.getElementById("alertBar").style.display="none";
+                alertz("off");
                 $('#loginModal').modal('hide');
             }
             else if (resp.backend==0){
                 var alertBar = document.getElementById("alertBar");
-                alertBar.className="alert alert-danger";
-                alertBar.style.display="";
-                alertBar.innerHTML="Invalid credentials";
+                alertz("danger","Invalid credentials");
                 document.getElementById("password").parentNode.parentNode.appendChild(alertBar);
             }
 
             else if (resp.backend==-1){
                 var alertBar = document.getElementById("alertBar");
-                alertBar.className="alert alert-warning";
-                alertBar.style.display="";
-                alertBar.innerHTML="Connection error";
+                alertz("warning","Connection error");
                 document.getElementById("password").parentNode.parentNode.appendChild(alertBar);
             }
         }
@@ -121,26 +163,38 @@ function createMultipleChoice(){
         'type':'multi',
         'question':document.getElementById("multiChoiceQuestion").value,
         'answer':document.getElementById("multiChoiceAnswer").value,
-        'feedback':document.getElementById("multiChoiceAnswerFeedback").value,
+        'feedback':document.getElementById("multiAnswerFeedback").value,
         'choice1':document.getElementById("multiChoice1").value,
         'choice2':document.getElementById("multiChoice2").value,
-        'choice3':document.getElementById("multiChoice3".value)
+        'choice3':document.getElementById("multiChoice3").value
     };
+   // console.log(question);
+    sendOver('createquestion',question,function(resp){
+        $('addMultiModal').modal('hide');
 
-    sendOver('CreateQuestion',question,function(resp){
         console.log(resp);
     });
 }
 
 function createTrueFalse(){
+    var tfAnswer;
+    if (document.getElementById("inlineRadio1").checked){
+        tfAnswer='true'
+    }
+    else if(document.getElementById("inlineRadio2").checked){
+        tfAnswer='false'
+    }
     var question = {
         'type':'tf',
-        'question':document.getElementById("multiChoiceQuestion").value,
-        'answer':document.getElementById("multiChoiceAnswer").value,
-        'feedback':document.getElementById("multiChoiceAnswerFeedback").value
+        'question':document.getElementById("tfQuestion").value,
+        'answer':tfAnswer,
+        'feedback':document.getElementById("tfFeedback").value
 
     };
-    sendOver('CreateQuestion',question,function(resp){
+
+    sendOver('createquestion',question,function(resp){
+        $('addTfModal').modal('hide');
+
         console.log(resp);
     });
 }
@@ -148,40 +202,176 @@ function createTrueFalse(){
 function createCoding(){
     var question ={
         'type':'code',
-        'question':document.getElementById("multiChoiceQuestion").value,
-        'expectedOutput':document.getElementById("multiChoiceAnswer").value,
-        'feedback':document.getElementById("multiChoiceAnswerFeedback").value
+        'question':document.getElementById("codeQuestion").value,
+        'expectedOutput':document.getElementById("codeAnswer").value
     };
-
-    sendOver('createQuestion',question,function(resp){
+   // console.log(question);
+    sendOver('createquestion',question,function(resp){
+        if (resp.status=1){
+            $('addCodeModal').modal('hide');
+        }
         console.log(resp);
     });
 }
 
-console.log(junkBank.type);
 
 function pullBank(){
+   var examName=document.getElementById("examName").parentNode;
+    var examNameClone=examName.cloneNode(true);
+    examNameClone.removeAttribute("style");
+    examNameClone.style.paddingBottom="5px";
+    outerBoarder.appendChild(examNameClone);
+   var bankHolder=document.getElementById("accordion");
+   var bankQuestion=bankHolder.getElementsByClassName("panel-default");
+    bankQuestion=bankQuestion[0];
+    bankHolder=bankHolder.cloneNode(true);
+    bankHolder.id="clonedBankHolder";
+    bankHolder.innerHTML="";
+    outerBoarder.appendChild(bankHolder);
+    var collapseCounter;
+    collapseCounter=4;
 
-    /*sendOver('bank', null , function(resp){
-     for (var i=0;i<junkBank.length;i++){
-     console.log(junkBank[i]);
-     };
-     });*/
+    for (var i = 0; i < junkBank.length; i++) {
+
+        var obj = junkBank[i];
+        for (var key in obj) {
+
+            var attrName = key;
+            var attrVal = obj[key];
+            //console.log(attrName," :  ",attrVal);
+            // console.log(attrName);
+                if (attrName!="eid") {
+                    var bankQuestionClone = bankQuestion.cloneNode(true);
+                    var bankCheckbox = bankQuestionClone.getElementsByTagName("input");
+                    bankCheckbox = bankCheckbox[0];
+                    bankCheckbox.name = key;
+                    var bankLines = bankQuestionClone.getElementsByTagName("li");
+
+                    var bankAnchor = bankQuestionClone.getElementsByTagName("a");
+                    bankAnchor[0].href = "#collapser" + collapseCounter;
+                    bankAnchor[0].innerHTML=attrVal.question;
+                    var collapsingArea=bankQuestionClone.getElementsByClassName("panel-collapse");
+                    collapsingArea[0].id= ("collapser"+ collapseCounter);
+                   // console.log("this is the result      ",("collapser"+ collapseCounter));
+
+
+                    switch (attrVal.type) {
+                        case 'multi':
+                            bankLines[0].innerHTML = attrVal.answer;
+                            bankLines[0].className += " list-group-item-success";
+                            bankLines[1].innerHTML = attrVal.choice1;
+                            bankLines[2].innerHTML = attrVal.choice2;
+                            bankLines[3].innerHTML = attrVal.choice3;
+                            break;
+                        case 'tf':
+                            bankLines[2].parentNode.removeChild(bankLines[2]);
+                            bankLines[2].parentNode.removeChild(bankLines[2]);
+                            if (attrVal.answer == "true") {
+                                bankLines[0].className += " list-group-item-success";
+                            }
+                            else if (attrVal.answer == "false") {
+                                bankLines[1].className += " list-group-item-success";
+                            }
+                            break;
+                        case 'code':
+                            bankLines[0].innerHTML = attrVal.answer;
+                            bankLines[1].parentNode.removeChild(bankLines[1]);
+                            bankLines[1].parentNode.removeChild(bankLines[1]);
+                            bankLines[1].parentNode.removeChild(bankLines[1]);
+                            break;
+                    }
+                    bankHolder.appendChild(bankQuestionClone);
+                    collapseCounter++;
+                }
+        }
+    }
+
+
+
+
 }
 
 function createExam(){
+    var examName=document.getElementById("examName").value;
+    var checkBoxes=document.getElementsByTagName("input");
+    var questions={};
+    for (var x=0; x<checkBoxes.length;x++){
+        if (checkBoxes[x].checked && checkBoxes[x].name!="checkboxDummy"){
+            var checkboxName=checkBoxes[x].name;
+            questions[checkboxName]='';
+            console.log(checkBoxes[x].name);
+        }
+    }
+    questions['name']=examName;
+    console.log(questions);
+    questions=JSON.stringify(questions);
+    console.log(questions);
 
+    sendOver('createExam',questions,function(resp){
+        if (resp.staus=1){
+            alertz("success","exam creation success","yes");
+        }
+    });
 }
 
 function currentExams(){
+    var examLister=document.getElementById("examLister");
+    var listClone=examLister.cloneNode(true);
+    listClone=listClone.getElementsByClassName("table");
+    listClone=listClone[0];
+   // console.log(examLister);
 
+    var examTakeButton=document.getElementById("examTakeButton");
+
+//change junk exams to resp and remove the comments on sendOver and it's closing bracket
+  //  sendOver('exams',null, function (resp) {
+
+    for (var i = 0; i < junkExams.length; i++) {
+
+        var obj = junkExams[i];
+        for (var key in obj) {
+
+            var attrName = key;
+            var attrVal = obj[key];
+            // console.log(attrName," :  ",attrVal);
+            // console.log(attrName);
+            var newRow=examLister.insertRow();
+            var nameCell=newRow.insertCell();
+            var gradesCell=newRow.insertCell();
+            var releasedCell=newRow.insertCell();
+
+
+
+            if (attrVal.grade=="-1"){
+                var buttonClone=examTakeButton.cloneNode(true);
+                buttonClone.removeAttribute("style");
+                buttonClone.setAttribute("name",attrName);
+                nameCell.appendChild(buttonClone);
+
+                gradesCell.innerHTML="Not yet taken";
+            }
+            else{
+                gradesCell.innerHTML=attrVal.grade;
+            }
+
+            nameCell.innerHTML+=("  "+ attrVal.named);
+            if (attrVal.released=="nr"){
+            releasedCell.innerHTML="No";
+            }
+            else{
+                releasedCell.innerHTML="Yes";
+            }
+        }
+    }
+   // });
 }
 
-function getExam(){
-   // sendOver('getExam', 'some eid would go here',function(resp){
+function getExam(fetchThis){
+    //change junkBanks to resp and uncomment the sendover and it's ending curly brace
 
-        console.log(junkBank.length);
-        for (var i = 0; i < 20; i++) {
+    // sendOver('getExam', fetchThis,function(resp){
+        //console.log(junkBank.length);
+        for (var i = 0; i < junkBank.length; i++) {
             //console.log('why...');
 
             var obj = junkBank[i];
@@ -192,13 +382,15 @@ function getExam(){
                 /*console.log(attrName," :  ",attrVal);
                 console.log(attrName);*/
                if (attrName=="eid"){
-                   var eidSetter =document.getElementById("submitExam");
+                   // exam id is saved to postExam button
+                   var eidSetter =document.getElementById("postExam");
                       eidSetter.dataset.eid=attrVal;
                }
                 switch (attrVal.type) {
                     case 'multi':
                         var multiDummy = document.getElementById("multiDummy");
                         var multiCloned = multiDummy.cloneNode(true);
+                        multiCloned.removeAttribute("style");
                         multiCloned.setAttribute("id", key);
                         var theRadios;
                         theRadios = multiCloned.getElementsByTagName("input");
@@ -232,11 +424,12 @@ function getExam(){
                         theRadios[0].innerHTML=attrVal.question;
 
 
-                        document.getElementById('outerBoarder').appendChild(multiCloned);
+                       outerBoarder.appendChild(multiCloned);
                         break;
                     case 'tf':
                         var tfDummy = document.getElementById("tfDummy");
                         var tfCloned = tfDummy.cloneNode(true);
+                        tfCloned.removeAttribute("style");
                         tfCloned.setAttribute("id", key);
                         var tfRadios;
                         tfRadios = tfCloned.getElementsByTagName("input");
@@ -247,11 +440,12 @@ function getExam(){
                         tfRadios = tfCloned.getElementsByTagName("h3");
                         tfRadios[0].innerHTML=attrVal.question;
 
-                        document.getElementById('outerBoarder').appendChild(tfCloned);
+                        outerBoarder.appendChild(tfCloned);
                         break;
                     case 'code':
                         var codeDummy = document.getElementById("codeDummy");
                         var codeCloned = codeDummy.cloneNode(true);
+                        codeCloned.removeAttribute("style");
                         codeCloned.setAttribute("id", key);
                         var codeTextArea;
                         codeTextArea = codeCloned.getElementsByTagName("p");
@@ -260,25 +454,25 @@ function getExam(){
                         var codeQuestion= codeCloned.getElementsByTagName("h3");
                         codeQuestion[0].innerHTML=attrVal.question;
 
-                        document.getElementById('outerBoarder').appendChild(codeCloned);
+                        outerBoarder.appendChild(codeCloned);
                         break;
                 }
-
             }
         }
-
-
  //   });
-
 }
 
 function postExam(){
-    var eid=document.getElementById('submitExam').dataset.eid;
+    var eid=document.getElementById('postExam').dataset.eid;
+   // console.log(eid);
+    if(eid=="invalid"){
+        alertz("warning","eid not found, please retry","yes")
+    }
     var answers={};
-    answers['cmd']='answered';
+    answers['eid']=eid;
     var radios = document.getElementsByTagName("input");
-    for (i=0; i<radios.length;i++){
-        if (radios[i].checked){
+    for (var i=0; i<radios.length;i++){
+        if (radios[i].checked && (radios[i].getAttribute("name")!=("tfDummy"||"multiDummy"))){
             // have to get name and save with pair
             var radioName= radios[i].getAttribute("name");
             var radioID= radios[i].getAttribute("id");
@@ -295,16 +489,41 @@ function postExam(){
         }
     }
     var codeAreas = document.getElementsByTagName("p");
-    for (x=0; x<=codeAreas; x++){
+    for (var x=0; x<codeAreas.length; x++){
         var codeAreaName=codeAreas[x].getAttribute("name");
-        console.log("step1");
         if (codeAreaName!="codeDummy"){
-            console.log('step 2');
-            answers[codeAreaName]=codeAreas[x].innerhtml;
+            answers[codeAreaName]=codeAreas[x].innerHTML;
         }
     }
+    sendOver('answered',answers,function(resp){
+        if (resp.status=1){
+            window.location = "http://google.com";//if submitted successfully will reroute to google
+        }
+    });
+}
 
-    console.log(answers);
-    answers=JSON.stringify(answers);
-    console.log(answers);
+function alertz(level,message,onPage){
+    var alertBar=document.getElementById("alertBar");
+    alertBar.innerHTML=message;
+    alertBar.removeAttribute("style");
+    switch(level){
+        case 'warning':
+            alertBar.className="alert alert-warning";
+            break;
+        case 'danger':
+            alertBar.className="alert alert-danger";
+            break;
+        case 'info':
+            alertBar.className="alert alert-info";
+            break;
+        case 'success':
+            alertBar.className="alert alert-success";
+            break;
+        case 'off':
+            alertBar.setAttribute("style","display: none");
+    }
+    if (onPage=="yes") {
+
+        outerBoarder.insertBefore(alertBar, outerBoarder.childNodes[0]);
+    }
 }
