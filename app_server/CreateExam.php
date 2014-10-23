@@ -1,8 +1,9 @@
 <?php
-class CreateQuestion {
+class CreateExam {
 	
 	public function post($data) {
-		if(isset($_SESSION['uid']) && $_SESSION['login'] === true) {
+		if(isset($_SESSION['uid']) && $_SESSION['login'] === true && $_SESSION['type'] === 'instructor') {
+			$data['uid'] = $_SESSION['uid'];
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, "http://web.njit.edu/~rdl4/app.php");
 			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
@@ -17,7 +18,7 @@ class CreateQuestion {
 			if($success) {
 				die(json_encode(array(
 					"status" => 1,
-					"message" => "Question successfully created")));
+					"message" => "Exam successfully created")));
 			}
 			elseif ($return_code === "500") {
 				http_response_code(500);
@@ -28,7 +29,7 @@ class CreateQuestion {
 			else {
 				die(json_encode(array(
 					"status" => 0,
-					"message" => "Failed to create question")));
+					"message" => "Failed to create exam")));
 			}
 		}
 		else {

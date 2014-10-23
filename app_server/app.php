@@ -17,6 +17,7 @@ require 'GetBank.php';
 require 'CreateExam.php';
 require 'ListExams.php';
 require 'GetExam.php';
+require 'StudentAnswers.php';
 
 $data = json_decode(file_get_contents('php://input'),true);
 $fun;
@@ -53,6 +54,9 @@ switch ($data['cmd']) {
 		$fun->post();
 	case "getExam":
 		$fun = new GetExam;
+		$fun->post($data);
+	case "answers":
+		$fun = new StudentAnswers;
 		$fun->post($data);
 }
 
