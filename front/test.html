@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="controller.js"></script>
+    <title>Login Page</title>
+    <script type="text/javascript">$(".alert").alert()</script>
+</head>
+<body>
+<!--begin body container-->
+<div class="container" id="outerBoarder" style="padding-top: 5px">
+
+<!-- folding pannel-->
+    <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <input type="checkbox" name="checkboxDummy" value="option1">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" id="accordionToggler">
+                        Collapsible Group Item #1
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse">
+                <ul class="list-group">
+                    <li class="list-group-item">True</li>
+                    <li class="list-group-item">False</li>
+                    <li class="list-group-item">Morbi leo risus</li>
+                    <li class="list-group-item">Porta ac consectetur ac</li>
+                </ul>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+                        Collapsible Group Item #2
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseTwo" class="panel-collapse collapse">
+                <div class="panel-body">
+                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+                        Collapsible Group Item #3
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseThree" class="panel-collapse collapse">
+                <div class="panel-body">
+                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end folding panel-->
+
+
+
+
+
+
+
+
+</div>
+<!-- end of body container-->
+
+<!--begin submit button container-->
+<div class="container" id="submitButtonContainer">
+    <button class="btn btn-default pull-right" type='button'  onclick="getExam();" data-eid='invalid'>
+        write junkBank to console
+    </button>
+
+    <button class="btn btn-default pull-left" type='button'  onclick="postExam();" data-eid='invalid' id="postExam">
+        post exam test
+    </button>
+
+    <button class="btn btn-default pull-center" type='button'  onclick="alertz('info','pizza time!','yes');">
+        alert
+    </button>
+
+    <button class="btn btn-default pull-left" type='button'  onclick="currentExams();">
+        current exams
+    </button>
+
+    <button class="btn btn-default pull-right" type='button'  onclick="pullBank();">
+        pull bank
+    </button>
+
+    <button class="btn btn-default pull-right" type='button'  onclick="createExam();">
+        create exam
+    </button>
+</div>
+
+<div class="container">
+    <button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addMultiModal" id="addMultiModBtn">
+        multi
+    </button>
+
+    <button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addTfModal" id="addTfModBtn">
+        tf
+    </button>
+
+    <button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addCodeModal" id="addCodeModBtn">
+        code
+    </button>
+</div>
+<!--end submit button container-->
+
+
+</body>
+
+
+<!-- multiple choice template -->
+
+<div class="panel panel-default" id="multiDummy" style="display: none">
+    <div class="panel-heading">
+        <h3 class="panel-title">Multiple choice</h3>
+    </div>
+    <div class="panel-body">
+        <div class="radio">
+            <label>
+                <input type="radio" name="multiDummy" id="optionsRadios1" value="option1">
+
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="multiDummy" id="optionsRadios2" value="option2">
+
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="multiDummy" id="optionsRadios3" value="option3">
+
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="multiDummy" id="optionsRadios4" value="option4">
+
+            </label>
+        </div>
+    </div>
+</div>
+<!-- end multiple choice template -->
+
+<!-- true false template-->
+
+<div class="panel panel-default" id="tfDummy" style="display: none">
+    <div class="panel-heading">
+        <h3 class="panel-title">True/False</h3>
+    </div>
+    <div class="panel-body">
+        <div class="radio">
+            <label>
+                <input type="radio" name="tfDummy" id="falsetrue" value="option1">
+                True
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="tfDummy" id="falsefalse" value="option2">
+                False
+            </label>
+        </div>
+    </div>
+</div>
+<!-- end true false template-->
+
+<!-- code template-->
+<div class="panel panel-default" id="codeDummy" style="display: none">
+    <div class="panel-heading">
+        <h3 class="panel-title">Coding</h3>
+    </div>
+    <div class="panel-body">
+        <p contenteditable="true" class="panel panel-info" name="codeDummy"></p>
+    </div>
+</div>
+<!-- end code template-->
+
+
+<!--begin exam list template-->
+<div class="panel panel-default" id="examLister" style="display: none">
+    <!-- Default panel contents -->
+    <div class="panel-heading">Current Exams</div>
+    <!-- Table -->
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Exam</th>
+            <th>Grades</th>
+            <th>Released</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!--end exam list-->
+
+<!-- alert bar -->
+<div class="alert alert-warning" style="display: none" id="alertBar" role="alert">
+
+</div>
+<!-- end alert bar-->
+
+<!--begin exam take button-->
+<button type="button" class="btn btn-default btn-xs" style="display:none" id="examTakeButton" onclick="getExam(this.name);">
+    <span class="glyphicon glyphicon-pencil"></span>
+</button>
+<!--end exam take button-->
+
+<!--start add multiple choice modal-->
+
+<div class="modal fade" id="addMultiModal" tabindex="-1" role="dialog" aria-labelledby="multiModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="multiModalLabel">Add multiple choice question</h4>
+            </div>
+            <div class="modal-body" id="modalMultiQuestions">
+                <div class="input-group" >
+                    <span class="input-group-addon">Question</span>
+                    <input class="form-control" name="question" type="text" placeholder="question" id="multiChoiceQuestion" required>
+                </div>
+                <div class="input-group" >
+                    <span class="input-group-addon">Answer</span>
+                    <input class="form-control" name="answer" type="text" placeholder="answer" id="multiChoiceAnswer" required>
+                </div>
+                <div class="input-group" >
+                    <input class="form-control" name="answer" type="text" placeholder="answer" id="multiAnswerFeedback" required>
+                    <span class="input-group-addon">Feedback</span>
+
+                </div>
+                <div class="input-group" >
+                    <span class="input-group-addon">Choice</span>
+                    <input class="form-control" name="choice" type="text" placeholder="choice" id="multiChoice" required>
+                </div>
+                <div class="input-group" >
+                    <span class="input-group-addon">Choice</span>
+                    <input class="form-control" name="choice" type="text" placeholder="choice" id="multiChoice1" required>
+                </div>
+                <div class="input-group" >
+                    <span class="input-group-addon">Choice</span>
+                    <input class="form-control" name="choice" type="text" placeholder="choice" id="multiChoice2" required>
+                </div>
+                <div class="input-group" >
+                    <span class="input-group-addon">Choice</span>
+                    <input class="form-control" name="choice" type="text" placeholder="choice" id="multiChoice3" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="createMultipleChoice();">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end add multiple choice modal-->
+
+<!--start add coding modal-->
+<div class="modal fade" id="addCodeModal" tabindex="-1" role="dialog" aria-labelledby="codeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="codeModalLabel">Add code question</h4>
+            </div>
+            <div class="modal-body" id="modalCodeQuestions">
+                <div class="input-group" >
+                    <span class="input-group-addon">Question</span>
+                    <input class="form-control" name="question" type="text" placeholder="question" id="codeQuestion" required>
+                </div>
+                <div class="input-group" >
+                    <span class="input-group-addon">Answer</span>
+                    <input class="form-control" name="answer" type="text" placeholder="answer" id="codeAnswer" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="createCoding();">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end add coding modal-->
+
+<!--modal add multiple choice-->
+
+<div class="modal fade" id="addTfModal" tabindex="-1" role="dialog" aria-labelledby="tfModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="tfModalLabel">Add multiple choice question</h4>
+            </div>
+            <div class="modal-body" id="modalTfQuestions">
+                <div class="input-group">
+                    <span class="input-group-addon">Question</span>
+                    <input class="form-control" name="question" type="text" placeholder="True/False Question" id="tfQuestion" required>
+                </div>
+                <div class="input-group" >
+                    <input class="form-control" name="answer" type="text" placeholder="answer" id="tfFeedback" required>
+                    <span class="input-group-addon">Feedback</span>
+
+                </div>
+
+                <label class="radio-inline">
+                    <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="tfTrue"> True
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="tfFalse"> False
+                </label>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="createTrueFalse();">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--end add multiple choice-->
+
+<!--begin exam name div-->
+<div class="input-group" style="display: none">
+    <input type="text" class="form-control" placeholder="Exam name" id="examName">
+</div>
+<!--end exam name div-->
+
+
+</html>
