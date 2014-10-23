@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="controller.js"></script>
+    <title>Login Page</title>
+    <script type="text/javascript">$(".alert").alert()</script>
+</head>
+<body>
+
+<div class="container" id="outerBoarder" style="padding-top: 5px">
+
+
+
+
+
+</div>
+<!-- end of body container-->
+
+<!--begin submit button container-->
+<div class="container" id="submitButtonContainer">
+    <button class="btn btn-default pull-right" type='button' data-toggle="modal" onclick="getExam();" data-eid='invalid'>
+        write junkBank to console
+    </button>
+
+    <button class="btn btn-default pull-left" type='button' data-toggle="modal" onclick="postExam();" data-eid='invalid' id="postExam">
+        post exam test
+    </button>
+
+    <button class="btn btn-default pull-center" type='button' data-toggle="modal" onclick="alertz('info','pizza time!','yes');">
+        alert
+    </button>
+
+    <button class="btn btn-default pull-left" type='button' data-toggle="modal" onclick="currentExams();">
+        current exams
+    </button>
+
+</div>
+<!--end submit button container-->
+
+
+</body>
+
+
+<!-- multiple choice template -->
+
+<div class="panel panel-default" id="multiDummy" style="display: none">
+    <div class="panel-heading">
+        <h3 class="panel-title">Multiple choice</h3>
+    </div>
+    <div class="panel-body">
+        <div class="radio">
+            <label>
+                <input type="radio" name="multiDummy" id="optionsRadios1" value="option1">
+
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="multiDummy" id="optionsRadios2" value="option2">
+
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="multiDummy" id="optionsRadios3" value="option3">
+
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="multiDummy" id="optionsRadios4" value="option4">
+
+            </label>
+        </div>
+    </div>
+</div>
+<!-- end multiple choice template -->
+
+<!-- true false template-->
+
+<div class="panel panel-default" id="tfDummy" style="display: none">
+    <div class="panel-heading">
+        <h3 class="panel-title">True/False</h3>
+    </div>
+    <div class="panel-body">
+        <div class="radio">
+            <label>
+                <input type="radio" name="tfDummy" id="falsetrue" value="option1">
+                True
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="tfDummy" id="falsefalse" value="option2">
+                False
+            </label>
+        </div>
+    </div>
+</div>
+<!-- end true false template-->
+
+<!-- code template-->
+<div class="panel panel-default" id="codeDummy" style="display: none">
+    <div class="panel-heading">
+        <h3 class="panel-title">Coding</h3>
+    </div>
+    <div class="panel-body">
+        <p contenteditable="true" class="panel panel-info" name="codeDummy"></p>
+    </div>
+</div>
+<!-- end code template-->
+
+
+<!--begin exam list template-->
+<div class="panel panel-default" id="examLister" style="display: none">
+    <!-- Default panel contents -->
+    <div class="panel-heading">Current Exams</div>
+    <!-- Table -->
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Exam</th>
+            <th>Grades</th>
+            <th>Released</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!--end exam list-->
+
+<!-- alert bar -->
+<div class="alert alert-warning" style="display: none" id="alertBar" role="alert">
+
+</div>
+<!-- end alert bar-->
+
+<!--begin exam take button-->
+<button type="button" class="btn btn-default btn-xs" style="display:none" id="examTakeButton" onclick="getExam(this.name);">
+    <span class="glyphicon glyphicon-pencil"></span>
+</button>
+<!--end exam take button-->
+
+
+
+
+</html>
