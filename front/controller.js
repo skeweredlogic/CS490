@@ -25,7 +25,7 @@ var junkBank = [
     {
         'type': 'tf',
         'question': 'moeb8pi?',
-        'answer': 'fsdfasdfs',
+        'answer': 'true',
         'feedback': 'asfdasd',
         'choice1': 'gdfgdf',
         'choice2': 'gdfgd6756f',
@@ -225,6 +225,7 @@ function pullBank(){
    var bankQuestion=bankHolder.getElementsByClassName("panel-default");
     bankQuestion=bankQuestion[0];
     bankHolder=bankHolder.cloneNode(true);
+    bankHolder.removeAttribute("style");
     bankHolder.id="clonedBankHolder";
     bankHolder.innerHTML="";
     outerBoarder.appendChild(bankHolder);
@@ -303,9 +304,6 @@ function createExam(){
         }
     }
     questions['name']=examName;
-    console.log(questions);
-    questions=JSON.stringify(questions);
-    console.log(questions);
 
     sendOver('createExam',questions,function(resp){
         if (resp.staus=1){
