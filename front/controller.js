@@ -2,9 +2,12 @@
  * Created by frosti on 10/17/2014.
  */
 var outerBoarder;
+var submitButtonContainer;
+var userRole='student';
 
 window.onload= function() {
     outerBoarder = document.getElementById("outerBoarder");
+    submitButtonContainer=document.getElementById("submitButtonContainer");
 };
 
 var junkBank = [
@@ -138,20 +141,24 @@ function loginSend(){
 
     sendOver('login',credentials,function(resp){
            // console.log(resp);
+            if (resp.role=="instructor"){
+                userRole="instructor";
+            }
             if (resp.backend==1){
                 alertz("off");
                 $('#loginModal').modal('hide');
             }
             else if (resp.backend==0){
-                var alertBar = document.getElementById("alertBar");
-                alertz("danger","Invalid credentials");
-                document.getElementById("password").parentNode.parentNode.appendChild(alertBar);
+                var placement;
+                placement=document.getElementById('loginModalLabel');
+                alertz("danger","Invalid credentials",placement);
+
             }
 
             else if (resp.backend==-1){
-                var alertBar = document.getElementById("alertBar");
-                alertz("warning","Connection error");
-                document.getElementById("password").parentNode.parentNode.appendChild(alertBar);
+                var placement2;
+                placement2=document.getElementById('loginModalLabel');
+                alertz("warning","Connection error",placement2);
             }
         }
     );
@@ -216,16 +223,17 @@ function createCoding(){
 
 
 function pullBank(){
+    pageClear();
    var examName=document.getElementById("examName").parentNode;
     var examNameClone=examName.cloneNode(true);
-    examNameClone.removeAttribute("style");
+    //examNameClone.removeAttribute("style");
     examNameClone.style.paddingBottom="5px";
     outerBoarder.appendChild(examNameClone);
    var bankHolder=document.getElementById("accordion");
    var bankQuestion=bankHolder.getElementsByClassName("panel-default");
     bankQuestion=bankQuestion[0];
     bankHolder=bankHolder.cloneNode(true);
-    bankHolder.removeAttribute("style");
+    //bankHolder.removeAttribute("style");
     bankHolder.id="clonedBankHolder";
     bankHolder.innerHTML="";
     outerBoarder.appendChild(bankHolder);
@@ -307,12 +315,15 @@ function createExam(){
 
     sendOver('createExam',questions,function(resp){
         if (resp.staus=1){
+            pageClear();
+            createIndex();
             alertz("success","exam creation success","yes");
         }
     });
 }
 
 function currentExams(){
+    pageClear();
     var examLister=document.getElementById("examLister");
     var listClone=examLister.cloneNode(true);
     listClone=listClone.getElementsByClassName("table");
@@ -342,7 +353,7 @@ function currentExams(){
 
             if (attrVal.grade=="-1"){
                 var buttonClone=examTakeButton.cloneNode(true);
-                buttonClone.removeAttribute("style");
+              //  buttonClone.removeAttribute("style");
                 buttonClone.setAttribute("name",attrName);
                 nameCell.appendChild(buttonClone);
 
@@ -369,6 +380,7 @@ function getExam(fetchThis){
 
     // sendOver('getExam', fetchThis,function(resp){
         //console.log(junkBank.length);
+        pageClear();
         for (var i = 0; i < junkBank.length; i++) {
             //console.log('why...');
 
@@ -388,7 +400,7 @@ function getExam(fetchThis){
                     case 'multi':
                         var multiDummy = document.getElementById("multiDummy");
                         var multiCloned = multiDummy.cloneNode(true);
-                        multiCloned.removeAttribute("style");
+                        //multiCloned.removeAttribute("style");
                         multiCloned.setAttribute("id", key);
                         var theRadios;
                         theRadios = multiCloned.getElementsByTagName("input");
@@ -427,7 +439,7 @@ function getExam(fetchThis){
                     case 'tf':
                         var tfDummy = document.getElementById("tfDummy");
                         var tfCloned = tfDummy.cloneNode(true);
-                        tfCloned.removeAttribute("style");
+                       // tfCloned.removeAttribute("style");
                         tfCloned.setAttribute("id", key);
                         var tfRadios;
                         tfRadios = tfCloned.getElementsByTagName("input");
@@ -443,7 +455,7 @@ function getExam(fetchThis){
                     case 'code':
                         var codeDummy = document.getElementById("codeDummy");
                         var codeCloned = codeDummy.cloneNode(true);
-                        codeCloned.removeAttribute("style");
+                       // codeCloned.removeAttribute("style");
                         codeCloned.setAttribute("id", key);
                         var codeTextArea;
                         codeTextArea = codeCloned.getElementsByTagName("p");
@@ -495,7 +507,9 @@ function postExam(){
     }
     sendOver('answered',answers,function(resp){
         if (resp.status=1){
-            window.location = "http://google.com";//if submitted successfully will reroute to google
+            pageClear();
+            createIndex();
+            alertz('success',"exam successfully submitted","yes");
         }
     });
 }
@@ -524,4 +538,49 @@ function alertz(level,message,onPage){
 
         outerBoarder.insertBefore(alertBar, outerBoarder.childNodes[0]);
     }
+    else{
+        onPage.parentNode.insertBefore(alertBar,onPage.parentNode.childNodes[0]);
+    }
+}
+
+function pageClear(){
+    while (outerBoarder.hasChildNodes()){
+        outerBoarder.removeChild(outerBoarder.lastChild);
+    }
+    while(submitButtonContainer.hasChildNodes()){
+        submitButtonContainer.removeChild(submitButtonContainer.lastChild);
+    }
+
+}
+
+function createIndex(){
+    pageClear();
+    var buttons =document.getElementById("examsButton");
+    buttons=buttons.cloneNode(true);
+    outerBoarder.appendChild(buttons);
+    if (userRole="instructor"){
+        buttons =document.getElementById("addMultiModBtn");
+        buttons=buttons.cloneNode(true);
+        outerBoarder.appendChild(buttons);
+        buttons =document.getElementById("addTfModBtn");
+        buttons=buttons.cloneNode(true);
+        outerBoarder.appendChild(buttons);
+        buttons =document.getElementById("addCodeModBtn");
+        buttons=buttons.cloneNode(true);
+        outerBoarder.appendChild(buttons);
+        buttons =document.getElementById("testBankButton");
+        buttons=buttons.cloneNode(true);
+        outerBoarder.appendChild(buttons);
+    }
+    buttons =document.getElementById("logoutButton");
+    buttons=buttons.cloneNode(true);
+    outerBoarder.appendChild(buttons);
+}
+
+function logout(){
+    sendOver('logout',null,function(resp){
+        if (resp.status=1){
+            location.reload(true);//if submitted successfully will reload page
+        }
+    });
 }
