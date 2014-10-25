@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script src="controller.js"></script>
+    <script src="controller.min.js"></script>
     <title>Login Page</title>
     <script type="text/javascript">$(".alert").alert()</script>
 </head>
@@ -32,47 +32,57 @@
 <!--begin submit button container-->
 <div class="container" id="submitButtonContainer">
 
-    <button class="btn btn-default pull-right" type='button'  onclick="getExam();" data-eid='invalid' >
-        write junkBank to console
-    </button>
 
-    <button class="btn btn-default pull-left" type='button'  onclick="postExam();" data-eid='invalid' id="postExam">
-        submit exam
-    </button>
-
-    <button class="btn btn-default pull-right" type='button'  onclick="createExam();" id="createExamButton">
-        create exam
-    </button>
-
-    <button class="btn btn-default pull-left" type='button'  onclick="currentExams();" id="examsButton">
-        exams
-    </button>
-
-    <button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addMultiModal" id="addMultiModBtn">
-        add multiple choice
-    </button>
-
-    <button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addTfModal" id="addTfModBtn">
-        add true/false
-    </button>
-
-    <button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addCodeModal" id="addCodeModBtn">
-        add code question
-    </button>
-
-    <button class="btn btn-default pull-left" type='button'  onclick="pullBank();" id="testBankButton">
-        view test bank
-    </button>
-
-    <button class="btn btn-default pull-right" type='button' onclick="sendOver('logout');" id="logoutButton" >
-        logout
-    </button>
 </div>
 <!--end submit button container-->
 
 
 <!-- begin template Container  -->
 <div class="container" id="templateContainer" style="display: none">
+
+    <!--button-->
+    <button class="btn btn-default pull-right" type='button'  onclick="getExam();" name="getExam" id="getExamDummy">
+        write junkBank to console (getexam)
+    </button>
+
+    <button class="btn btn-default pull-right" type='button'  onclick="postExam();" id="postExamDummy">
+        submit exam
+    </button>
+
+    <button class="btn btn-default pull-right" type='button'  onclick="createExam();" id="createExamButtonDummy">
+        create exam
+    </button>
+
+    <button class="btn btn-default pull-left" type='button'  onclick="currentExams();" id="examsButtonDummy">
+        exams
+    </button>
+
+    <button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addMultiModal" id="addMultiModBtnDummy">
+        add multiple choice
+    </button>
+
+    <button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addTfModal" id="addTfModBtnDummy">
+        add true/false
+    </button>
+
+    <button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addCodeModal" id="addCodeModBtnDummy">
+        add code question
+    </button>
+
+    <button class="btn btn-default pull-left" type='button'  onclick="pullBank();" id="testBankButtonDummy">
+        view test bank
+    </button>
+
+    <button class="btn btn-default pull-right" type='button' onclick="sendOver('logout');" id="logoutButtonDummy" >
+        logout
+    </button>
+
+    <button class="btn btn-default pull-left" type='button' onclick="createIndex();" id="createIndexDummy" >
+        Home
+    </button>
+    <!--end buttons-->
+
+
     <!-- multiple choice template -->
 
     <div class="panel panel-default" id="multiDummy">
@@ -178,6 +188,12 @@
     </button>
     <!--end exam take button-->
 
+    <!--begin review button-->
+    <button type="button" class="btn btn-default btn-xs" id="examReviewButton" onclick="reviewExam(this.name);">
+        <span class="glyphicon glyphicon-list-alt"></span>
+    </button>
+    <!--end review button-->
+
     <!--begin exam name div-->
     <div class="input-group">
         <input type="text" class="form-control" placeholder="Exam name" id="examName">
@@ -199,8 +215,9 @@
                 <ul class="list-group">
                     <li class="list-group-item">True</li>
                     <li class="list-group-item">False</li>
-                    <li class="list-group-item">Morbi leo risus</li>
-                    <li class="list-group-item">Porta ac consectetur ac</li>
+                    <li class="list-group-item"></li>
+                    <li class="list-group-item"></li>
+                    <li class="list-group-item list-group-item-info" style="display: none"></li>
                 </ul>
             </div>
         </div>
@@ -279,7 +296,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="createMultipleChoice();">Add</button>
+                <button type="button" class="btn btn-primary" onclick="createMultipleChoice(this);">Add</button>
             </div>
         </div>
     </div>
@@ -306,14 +323,14 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="createCoding();">Add</button>
+                <button type="button" class="btn btn-primary" onclick="createCoding(this);">Add</button>
             </div>
         </div>
     </div>
 </div>
 <!--end add coding modal-->
 
-<!--modal add multiple choice-->
+<!--modal add true/false -->
 <div class="modal fade" id="addTfModal" tabindex="-1" role="dialog" aria-labelledby="tfModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -341,14 +358,14 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="loginSend()">Add</button>
+                <button type="button" class="btn btn-primary" onclick="createTrueFalse(this)">Add</button>
             </div>
         </div>
     </div>
 </div>
-<!--end add multiple choice-->
+<!--end add true/false -->
 
-<!--modal add multiple choice-->
+<!-- Login modal-->
 
 <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -358,24 +375,26 @@
                 <h4 class="modal-title" id="loginModalLabel">Login</h4>
             </div>
             <div class="modal-body">
-                <div class="input-group">
+                <div class="form-group">
                     <span class="input-group-addon">Username</span>
                     <input class="form-control" name="question" type="text" placeholder="username" id="username" required>
                 </div>
-                <div class="input-group">
-                    <span class="input-group-addon">Password</span>
-                    <input class="form-control" name="question" type="text" placeholder="password" id="password" required>
+
+                <div class="form-group">
+                    <input class="form-control" name="password" type="password" placeholder="password" id="password" required onkeydown="if (event.keyCode == 13) document.getElementById('loginSendButton').click()">
                 </div>
+
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="loginSend();">Add</button>
+                <button type="button" class="btn btn-primary" onclick="loginSend(this);">Add</button>
             </div>
         </div>
     </div>
 </div>
 
-<!--end add multiple choice-->
+<!--end login Modal-->
 
 </body>
 </html>
