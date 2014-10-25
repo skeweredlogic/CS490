@@ -8,8 +8,8 @@ var userRole='student';
 window.onload= function() {
     outerBoarder = document.getElementById("outerBoarder");
     submitButtonContainer=document.getElementById("submitButtonContainer");
-    createIndex();
-   // testAddAllButtons();
+    //createIndex();
+    testAddAllButtons();
 };
 
 var junkBank = [
@@ -166,9 +166,10 @@ function sendOver(command,data,callback){
     request.onreadystatechange = function() {
         if (request.status == 200 && request.readyState == 4){
             var resp = JSON.parse(request.responseText);
+            console.log("resp in sendover: ",resp);
             callback(resp);
         }
-        if (request.status == 401 && request.readyState == 4){
+        else if (request.status == 401 && request.readyState == 4){
             var noSession = JSON.parse(request.responseText);
             $('#addCodeModal').modal('hide');
             $('#addMultiModal').modal('hide');
@@ -176,9 +177,10 @@ function sendOver(command,data,callback){
             $('#loginModal').modal('show');
             console.log("no session", noSession);
         }
-        if (request.status == 500 && request.readyState ==4){
+        else if (request.status == 500){
             var servedError = JSON.parse(request.responseText);
-            console.log("server error", servedError)
+            console.log("server error", servedError);
+            alertz("danger","server error","yes");
         }
     };
 
@@ -198,7 +200,7 @@ function loginSend(subButton){
     var credentials = {'user':username,'pass':password};
 
     sendOver('login',credentials,function(resp){
-           // console.log(resp);
+            console.log("resp in login: ", resp);
             if (resp.role=="instructor"){
                 userRole="instructor";
             }
@@ -244,8 +246,13 @@ function createMultipleChoice(subButton){
     }
    // console.log(question);
     sendOver('createquestion',question,function(resp){
-        $('addMultiModal').modal('hide');
-
+        if (resp.status==1){
+            $('addMultiModal').modal('hide');
+            alertz("success","question added successfully","yes");
+        }
+        else{
+            alertz("danger",resp.message,subButton);
+        }
         console.log(resp);
     });
 }
@@ -270,7 +277,7 @@ function createTrueFalse(subButton){
 
         var attrName = key;
         var attrVal = question[key];
-        if (attrVal=="")
+        if (attrVal=="" || question['answer']!==("true"||"false"))
         {
             alertz('warning','Please fill out all fields',subButton);
             return;
@@ -278,8 +285,14 @@ function createTrueFalse(subButton){
     }
 
     sendOver('createquestion',question,function(resp){
-        $('addTfModal').modal('hide');
 
+        if (resp.status==1){
+            $('#addTfModal').modal('hide');
+            alertz("success","question added successfully","yes");
+        }
+        else{
+            alertz("danger",resp.message,subButton);
+        }
         console.log(resp);
     });
 }
@@ -304,8 +317,12 @@ function createCoding(subButton){
 
    // console.log(question);
     sendOver('createquestion',question,function(resp){
-        if (resp.status=1){
+        if (resp.status==1){
             $('addCodeModal').modal('hide');
+            alertz("success","question added successfully","yes");
+        }
+        else{
+            alertz("danger",resp.message,subButton);
         }
         console.log(resp);
     });
@@ -430,6 +447,7 @@ function currentExams(){
 
     sendOver('exams',null,function(resp){
     pageClear();
+        addButton("createIndexDummy");
     var examLister=document.getElementById("examLister");
     var listClone=examLister.cloneNode(true);
     outerBoarder.appendChild(listClone);
@@ -645,6 +663,7 @@ function alertz(level,message,onPage){
             break;
         case 'off':
             alertBar.setAttribute("style","display: none");
+            return;
     }
     if (onPage==("yes"||"y")) {
 
@@ -709,6 +728,7 @@ function testAddAllButtons(){
     addButton("logoutButtonDummy");
     addButton("postExamDummy");
     addButton("getExamDummy");
+    addButton("loginDummy")
 }
 
 function reviewExam(){
