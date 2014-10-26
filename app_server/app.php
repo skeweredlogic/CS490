@@ -65,6 +65,7 @@ switch ($data['cmd']) {
 		break;
 }
 
+http_response_code(501);
 die (json_encode(array(
 	"message" => "invalid command or not yet implemented")));
 
