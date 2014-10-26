@@ -32,9 +32,14 @@ class CreateExam {
 					"message" => "Failed to create exam")));
 			}
 		}
+		elseif(isset($_SESSION['uid']) && $_SESSION['login'] === true && $_SESSION['type'] === 'student') {
+			http_response_code(403);
+			die(json_encode(array(
+				"status" => -1)));
+		}
 		else {
 			http_response_code(401);
-			header("Location: http://web.njit.edu/~cjr29/cs490/index.html");
+			//header("Location: http://web.njit.edu/~cjr29/cs490/index.html");
 			die(json_encode(array(
 				"status" => -1)));
 		}

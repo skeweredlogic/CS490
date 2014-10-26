@@ -7,8 +7,6 @@
  *
  */
 
-session_start();
-
 require 'Login.php';
 require 'Logout.php';
 require 'Register.php';
@@ -19,6 +17,7 @@ require 'ListExams.php';
 require 'GetExam.php';
 require 'StudentAnswers.php';
 
+session_start();
 $data = json_decode(file_get_contents('php://input'),true);
 $fun;
 
@@ -40,24 +39,30 @@ switch ($data['cmd']) {
 		$fun = new Register;
 		$fun->post($data['data']);
 		break;
-	case "createQuestion":
+	case "createquestion":
 		$fun = new CreateQuestion;
 		$fun->post($data);
+		break;
 	case "bank":
 		$fun = new GetBank;
 		$fun->post();
+		break;
 	case "createExam":
 		$fun = new CreateExam;
 		$fun->post($data);
+		break;
 	case "exams":
 		$fun = new ListExams;
 		$fun->post();
+		break;
 	case "getExam":
 		$fun = new GetExam;
 		$fun->post($data);
-	case "answers":
+		break;
+	case "answered":
 		$fun = new StudentAnswers;
 		$fun->post($data);
+		break;
 }
 
 die (json_encode(array(

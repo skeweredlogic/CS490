@@ -28,7 +28,7 @@ class Login {
 		if ($success) {
 			$success = 1;
 			$_SESSION['login'] = true;
-			$_SESSION['type'] = $result['type'];
+			$_SESSION['type'] = /*$result['type']*/"instructor";
 			$_SESSION['uid'] = $user;
 			$message = "success";
 		}
@@ -43,7 +43,8 @@ class Login {
 
 		die(json_encode(array(
 			"backend" => $success,
-			"type" => $result['type'],
+			"njit" => 0,
+			"role" => /*$result['type']*/isset($_SESSION['type']) ? $_SESSION['type'] : "",
 			"uid" => $user)));
 	}
 
