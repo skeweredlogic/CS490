@@ -27,7 +27,8 @@ class ListExams {
 			else {
 				die(json_encode(array(
 					"status" => 0,
-					"message" => "Failed to retrieve exam list")));
+					"message" => "Failed to retrieve exam list",
+					"code" => $return_code)));
 			}
 		}
 

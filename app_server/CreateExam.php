@@ -3,7 +3,9 @@ class CreateExam {
 	
 	public function post($data) {
 		if(isset($_SESSION['uid']) && $_SESSION['login'] === true && $_SESSION['type'] === 'instructor') {
-			$data['uid'] = $_SESSION['uid'];
+			if(isset($data['data']['inlineRadioOptions'])) {
+				unset($data['data']['inlineRadioOptions']);
+			}
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, "http://web.njit.edu/~rdl4/app.php");
 			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
