@@ -2,9 +2,14 @@
  * Created by frosti on 10/17/2014.
  */
 var outerBoarder;
+var submitButtonContainer;
+var userRole='student';
 
 window.onload= function() {
     outerBoarder = document.getElementById("outerBoarder");
+    submitButtonContainer=document.getElementById("submitButtonContainer");
+    //createIndex();
+    testAddAllButtons();
 };
 
 var junkBank = [
@@ -25,7 +30,7 @@ var junkBank = [
     {
         'type': 'tf',
         'question': 'moeb8pi?',
-        'answer': 'fsdfasdfs',
+        'answer': 'true',
         'feedback': 'asfdasd',
         'choice1': 'gdfgdf',
         'choice2': 'gdfgd6756f',
@@ -47,6 +52,58 @@ var junkBank = [
     }
 ];
 
+var junkExamReview = [
+    {"eid":"restinpepperonis"},
+    {"3434":
+    {
+        "type": "multi",
+        "question": "jpifsjdfpi?",
+        "answer": "fsdfasdfs",
+        'feedback': 'asfdasd',
+        'choice1': 'gdfgdf',
+        'choice2': 'gdfgd6756f',
+        'choice3': 'g4534dfgdf',
+        'answered': 'g4534dfgdf'
+    }
+
+    },
+    {'gg45':
+    {
+        'type': 'tf',
+        'question': 'moeb8pi?',
+        'answer': 'true',
+        'feedback': 'asfdasd',
+        'choice1': 'gdfgdf',
+        'choice2': 'gdfgd6756f',
+        'choice3': 'g4534dfgdf',
+        'answered': 'true'
+    }
+
+    },
+    {'r4r4': {
+        'type': 'code',
+        'question': 'pokp23kpi?',
+        'answer': 'fsdfasdfs',
+        'feedback': 'asfdasd',
+        'choice1': 'gdfgdf',
+        'choice2': 'gdfgd6756f',
+        'choice3': 'g4534dfgdf',
+        'answered': 'g4534dfgdf'
+    }
+    },
+    {'454rte':
+    {
+        'type': 'multi',
+        'question': 'pokp23kpi?',
+        'answer': 'fsdfasdfs',
+        'feedback': 'finally done!',
+        'choice1': 'gdfgdf',
+        'choice2': 'gdfgd6756f',
+        'choice3': 'g4534dfgdf',
+        'answered': 'fsdfasdfs'
+    }
+    }
+];
 /*junkBank =JSON.stringify(junkBank);
  console.log(junkBank);
  junkBank =JSON.parse(junkBank);
@@ -87,10 +144,12 @@ var junkExams =[
     }
 ];
 
+/*
 junkExams=JSON.stringify(junkExams);
  console.log(junkExams);
 junkExams =JSON.parse(junkExams);
  console.log(junkExams);
+*/
 
 
 function sendOver(command,data,callback){
@@ -107,16 +166,21 @@ function sendOver(command,data,callback){
     request.onreadystatechange = function() {
         if (request.status == 200 && request.readyState == 4){
             var resp = JSON.parse(request.responseText);
+            console.log("resp in sendover: ",resp);
             callback(resp);
         }
-        if (request.status == 401 && request.readyState == 4){
+        else if (request.status == 401 && request.readyState == 4){
             var noSession = JSON.parse(request.responseText);
+            $('#addCodeModal').modal('hide');
+            $('#addMultiModal').modal('hide');
+            $('#addTfModal').modal('hide');
             $('#loginModal').modal('show');
             console.log("no session", noSession);
         }
-        if (request.status == 500 && request.readyState ==4){
+        else if (request.status == 500){
             var servedError = JSON.parse(request.responseText);
-            console.log("server error", servedError)
+            console.log("server error", servedError);
+            alertz("danger","server error","yes");
         }
     };
 
@@ -130,34 +194,35 @@ function sendOver(command,data,callback){
     //console.log(JSON.parse(request.responseText);
 }
 
-
-function loginSend(){
+function loginSend(subButton){
     var username = document.getElementById('username').value;
     var password = document.getElementById('password').value;
     var credentials = {'user':username,'pass':password};
 
     sendOver('login',credentials,function(resp){
-           // console.log(resp);
+            console.log("resp in login: ", resp);
+            if (resp.role=="instructor"){
+                userRole="instructor";
+            }
             if (resp.backend==1){
                 alertz("off");
                 $('#loginModal').modal('hide');
             }
             else if (resp.backend==0){
-                var alertBar = document.getElementById("alertBar");
-                alertz("danger","Invalid credentials");
-                document.getElementById("password").parentNode.parentNode.appendChild(alertBar);
+
+                alertz("danger","Invalid credentials",subButton);
+
             }
 
             else if (resp.backend==-1){
-                var alertBar = document.getElementById("alertBar");
-                alertz("warning","Connection error");
-                document.getElementById("password").parentNode.parentNode.appendChild(alertBar);
+
+                alertz("warning","Connection error",subButton);
             }
         }
     );
 }
 
-function createMultipleChoice(){
+function createMultipleChoice(subButton){
 
     var question = {
         'type':'multi',
@@ -168,15 +233,31 @@ function createMultipleChoice(){
         'choice2':document.getElementById("multiChoice2").value,
         'choice3':document.getElementById("multiChoice3").value
     };
+
+    for (var key in question) {
+
+        var attrName = key;
+        var attrVal = question[key];
+        if (attrVal=="")
+        {
+            alertz('warning','Please fill out all fields',subButton);
+            return;
+        }
+    }
    // console.log(question);
     sendOver('createquestion',question,function(resp){
-        $('addMultiModal').modal('hide');
-
+        if (resp.status==1){
+            $('addMultiModal').modal('hide');
+            alertz("success","question added successfully","yes");
+        }
+        else{
+            alertz("danger",resp.message,subButton);
+        }
         console.log(resp);
     });
 }
 
-function createTrueFalse(){
+function createTrueFalse(subButton){
     var tfAnswer;
     if (document.getElementById("inlineRadio1").checked){
         tfAnswer='true'
@@ -192,23 +273,56 @@ function createTrueFalse(){
 
     };
 
-    sendOver('createquestion',question,function(resp){
-        $('addTfModal').modal('hide');
+    for (var key in question) {
 
+        var attrName = key;
+        var attrVal = question[key];
+        if (attrVal=="" || question['answer']!==("true"||"false"))
+        {
+            alertz('warning','Please fill out all fields',subButton);
+            return;
+        }
+    }
+
+    sendOver('createquestion',question,function(resp){
+
+        if (resp.status==1){
+            $('#addTfModal').modal('hide');
+            alertz("success","question added successfully","yes");
+        }
+        else{
+            alertz("danger",resp.message,subButton);
+        }
         console.log(resp);
     });
 }
 
-function createCoding(){
+function createCoding(subButton){
     var question ={
         'type':'code',
         'question':document.getElementById("codeQuestion").value,
         'expectedOutput':document.getElementById("codeAnswer").value
     };
+
+    for (var key in question) {
+
+        var attrName = key;
+        var attrVal = question[key];
+        if (attrVal=="")
+        {
+            alertz('warning','Please fill out all fields',subButton);
+            return;
+        }
+    }
+
    // console.log(question);
     sendOver('createquestion',question,function(resp){
-        if (resp.status=1){
+        if (resp.status==1){
             $('addCodeModal').modal('hide');
+            alertz("success","question added successfully","yes");
+        }
+        else{
+            alertz("danger",resp.message,subButton);
         }
         console.log(resp);
     });
@@ -216,24 +330,32 @@ function createCoding(){
 
 
 function pullBank(){
+    sendOver('bank',null,function(resp){
+    pageClear();
+
+    addButton("createIndexDummy");
+    addButton("createExamButtonDummy");
+
+
    var examName=document.getElementById("examName").parentNode;
     var examNameClone=examName.cloneNode(true);
-    examNameClone.removeAttribute("style");
+    //examNameClone.removeAttribute("style");
     examNameClone.style.paddingBottom="5px";
     outerBoarder.appendChild(examNameClone);
    var bankHolder=document.getElementById("accordion");
    var bankQuestion=bankHolder.getElementsByClassName("panel-default");
     bankQuestion=bankQuestion[0];
     bankHolder=bankHolder.cloneNode(true);
+    //bankHolder.removeAttribute("style");
     bankHolder.id="clonedBankHolder";
     bankHolder.innerHTML="";
     outerBoarder.appendChild(bankHolder);
     var collapseCounter;
     collapseCounter=4;
 
-    for (var i = 0; i < junkBank.length; i++) {
+    for (var i = 0; i < resp.length; i++) {
 
-        var obj = junkBank[i];
+        var obj = resp[i];
         for (var key in obj) {
 
             var attrName = key;
@@ -266,10 +388,10 @@ function pullBank(){
                         case 'tf':
                             bankLines[2].parentNode.removeChild(bankLines[2]);
                             bankLines[2].parentNode.removeChild(bankLines[2]);
-                            if (attrVal.answer == "true") {
+                            if (attrVal.answer === "true") {
                                 bankLines[0].className += " list-group-item-success";
                             }
-                            else if (attrVal.answer == "false") {
+                            else if (attrVal.answer === "false") {
                                 bankLines[1].className += " list-group-item-success";
                             }
                             break;
@@ -286,7 +408,7 @@ function pullBank(){
         }
     }
 
-
+    });
 
 
 }
@@ -299,43 +421,54 @@ function createExam(){
         if (checkBoxes[x].checked && checkBoxes[x].name!="checkboxDummy"){
             var checkboxName=checkBoxes[x].name;
             questions[checkboxName]='';
-            console.log(checkBoxes[x].name);
+          //  console.log(checkBoxes[x].name);
         }
     }
     questions['name']=examName;
-    console.log(questions);
-    questions=JSON.stringify(questions);
-    console.log(questions);
 
+    if (questions['name']==""){
+        alertz('warn','Please enter an exam name', "yes");
+        return;
+    }
+    if (Object.keys(questions).length<2){
+        alertz('warning',"Please select at least one question","yes");
+        return;
+    }
     sendOver('createExam',questions,function(resp){
         if (resp.staus=1){
+            pageClear();
+            createIndex();
             alertz("success","exam creation success","yes");
         }
     });
 }
 
 function currentExams(){
+
+    sendOver('exams',null,function(resp){
+    pageClear();
+        addButton("createIndexDummy");
     var examLister=document.getElementById("examLister");
     var listClone=examLister.cloneNode(true);
+    outerBoarder.appendChild(listClone);
     listClone=listClone.getElementsByClassName("table");
     listClone=listClone[0];
    // console.log(examLister);
 
     var examTakeButton=document.getElementById("examTakeButton");
+    var examReviewButton=document.getElementById("examReviewButton");
 
-//change junk exams to resp and remove the comments on sendOver and it's closing bracket
-  //  sendOver('exams',null, function (resp) {
 
-    for (var i = 0; i < junkExams.length; i++) {
+    for (var i = 0; i < resp.length; i++) {
 
-        var obj = junkExams[i];
+        var obj = resp[i];
         for (var key in obj) {
 
             var attrName = key;
             var attrVal = obj[key];
             // console.log(attrName," :  ",attrVal);
             // console.log(attrName);
-            var newRow=examLister.insertRow();
+            var newRow=listClone.insertRow();
             var nameCell=newRow.insertCell();
             var gradesCell=newRow.insertCell();
             var releasedCell=newRow.insertCell();
@@ -344,13 +477,17 @@ function currentExams(){
 
             if (attrVal.grade=="-1"){
                 var buttonClone=examTakeButton.cloneNode(true);
-                buttonClone.removeAttribute("style");
+              //  buttonClone.removeAttribute("style");
                 buttonClone.setAttribute("name",attrName);
                 nameCell.appendChild(buttonClone);
 
                 gradesCell.innerHTML="Not yet taken";
             }
             else{
+                var reviewButtonClone=examReviewButton.cloneNode(true);
+                reviewButtonClone.setAttribute("name",attrName);
+                nameCell.appendChild(reviewButtonClone);
+
                 gradesCell.innerHTML=attrVal.grade;
             }
 
@@ -363,18 +500,22 @@ function currentExams(){
             }
         }
     }
-   // });
+    });
 }
 
 function getExam(fetchThis){
     //change junkBanks to resp and uncomment the sendover and it's ending curly brace
 
-    // sendOver('getExam', fetchThis,function(resp){
+     sendOver('getExam', fetchThis,function(resp){
         //console.log(junkBank.length);
-        for (var i = 0; i < junkBank.length; i++) {
+       // sleep(5000,pageClear());
+        pageClear();
+        addButton("createIndexDummy");
+        addButton("postExamDummy");
+        for (var i = 0; i < resp.length; i++) {
             //console.log('why...');
 
-            var obj = junkBank[i];
+            var obj = resp[i];
             for (var key in obj) {
 
                 var attrName = key;
@@ -384,13 +525,13 @@ function getExam(fetchThis){
                if (attrName=="eid"){
                    // exam id is saved to postExam button
                    var eidSetter =document.getElementById("postExam");
-                      eidSetter.dataset.eid=attrVal;
+                      eidSetter.name=attrVal;
                }
                 switch (attrVal.type) {
                     case 'multi':
                         var multiDummy = document.getElementById("multiDummy");
                         var multiCloned = multiDummy.cloneNode(true);
-                        multiCloned.removeAttribute("style");
+                        //multiCloned.removeAttribute("style");
                         multiCloned.setAttribute("id", key);
                         var theRadios;
                         theRadios = multiCloned.getElementsByTagName("input");
@@ -429,7 +570,7 @@ function getExam(fetchThis){
                     case 'tf':
                         var tfDummy = document.getElementById("tfDummy");
                         var tfCloned = tfDummy.cloneNode(true);
-                        tfCloned.removeAttribute("style");
+                       // tfCloned.removeAttribute("style");
                         tfCloned.setAttribute("id", key);
                         var tfRadios;
                         tfRadios = tfCloned.getElementsByTagName("input");
@@ -445,7 +586,7 @@ function getExam(fetchThis){
                     case 'code':
                         var codeDummy = document.getElementById("codeDummy");
                         var codeCloned = codeDummy.cloneNode(true);
-                        codeCloned.removeAttribute("style");
+                       // codeCloned.removeAttribute("style");
                         codeCloned.setAttribute("id", key);
                         var codeTextArea;
                         codeTextArea = codeCloned.getElementsByTagName("p");
@@ -459,13 +600,13 @@ function getExam(fetchThis){
                 }
             }
         }
- //   });
+  });
 }
 
 function postExam(){
-    var eid=document.getElementById('postExam').dataset.eid;
+    var eid=document.getElementById('postExam').name;
    // console.log(eid);
-    if(eid=="invalid"){
+    if(eid=="undefined"){
         alertz("warning","eid not found, please retry","yes")
     }
     var answers={};
@@ -497,7 +638,8 @@ function postExam(){
     }
     sendOver('answered',answers,function(resp){
         if (resp.status=1){
-            window.location = "http://google.com";//if submitted successfully will reroute to google
+            createIndex();
+            alertz('success',"exam successfully submitted","yes");
         }
     });
 }
@@ -507,23 +649,183 @@ function alertz(level,message,onPage){
     alertBar.innerHTML=message;
     alertBar.removeAttribute("style");
     switch(level){
-        case 'warning':
+        case ('warning'||'warn'):
             alertBar.className="alert alert-warning";
             break;
-        case 'danger':
+        case ('danger'||'red'):
             alertBar.className="alert alert-danger";
             break;
-        case 'info':
+        case ('info'||'blue'):
             alertBar.className="alert alert-info";
             break;
-        case 'success':
+        case ('success'||'green'):
             alertBar.className="alert alert-success";
             break;
         case 'off':
             alertBar.setAttribute("style","display: none");
+            return;
     }
-    if (onPage=="yes") {
+    if (onPage==("yes"||"y")) {
 
         outerBoarder.insertBefore(alertBar, outerBoarder.childNodes[0]);
     }
+    else{
+        onPage.parentNode.insertBefore(alertBar,onPage.parentNode.childNodes[0]);
+    }
 }
+
+function pageClear(){
+
+   while (outerBoarder.hasChildNodes()){
+        outerBoarder.removeChild(outerBoarder.lastChild);
+    }
+
+
+    while(submitButtonContainer.hasChildNodes()){
+        submitButtonContainer.removeChild(submitButtonContainer.lastChild);
+    }
+
+}
+
+function createIndex(){
+    pageClear();
+    addButton("createIndexDummy");
+    addButton("examsButtonDummy");
+
+    if (userRole="instructor"){
+        addButton("addMultiModBtnDummy");
+        addButton("addTfModBtnDummy");
+        addButton("addCodeModBtnDummy");
+        addButton("testBankButtonDummy");
+    }
+    addButton("logoutButtonDummy");
+}
+
+function logout(){
+    sendOver('logout',null,function(resp){
+        if (resp.status=1){
+            location.reload(true);//if submitted successfully will reload page
+        }
+    });
+}
+
+
+function addButton(button){
+    var addButtons;
+    addButtons=document.getElementById(button);
+    addButtons=addButtons.cloneNode(true);
+    addButtons.id=button.slice(0,-5);
+    submitButtonContainer.appendChild(addButtons);
+}
+
+function testAddAllButtons(){
+    addButton("createIndexDummy");
+    addButton("examsButtonDummy");
+        addButton("addMultiModBtnDummy");
+        addButton("addTfModBtnDummy");
+        addButton("addCodeModBtnDummy");
+        addButton("testBankButtonDummy");
+    addButton("logoutButtonDummy");
+    addButton("postExamDummy");
+    addButton("getExamDummy");
+    addButton("loginDummy")
+}
+
+function reviewExam(){
+    pageClear();
+
+    addButton("createIndexDummy");
+
+
+    var examName=document.getElementById("examName").parentNode;
+    var examNameClone=examName.cloneNode(true);
+    //examNameClone.removeAttribute("style");
+    examNameClone.style.paddingBottom="5px";
+    outerBoarder.appendChild(examNameClone);
+    var bankHolder=document.getElementById("accordion");
+    var bankQuestion=bankHolder.getElementsByClassName("panel-default");
+    bankQuestion=bankQuestion[0];
+    bankHolder=bankHolder.cloneNode(true);
+    //bankHolder.removeAttribute("style");
+    bankHolder.id="clonedBankHolder";
+    bankHolder.innerHTML="";
+    outerBoarder.appendChild(bankHolder);
+    var collapseCounter;
+    collapseCounter=4;
+
+    for (var i = 0; i < junkExamReview.length; i++) {
+
+        var obj = junkExamReview[i];
+        for (var key in obj) {
+
+            var attrName = key;
+            var attrVal = obj[key];
+            //console.log(attrName," :  ",attrVal);
+            // console.log(attrName);
+            if (attrName!="eid") {
+                var bankQuestionClone = bankQuestion.cloneNode(true);
+                var bankCheckbox = bankQuestionClone.getElementsByTagName("input");
+                bankCheckbox = bankCheckbox[0];
+                bankCheckbox.name = key;
+                var bankLines = bankQuestionClone.getElementsByTagName("li");
+
+                var bankAnchor = bankQuestionClone.getElementsByTagName("a");
+                bankAnchor[0].href = "#collapser" + collapseCounter;
+                bankAnchor[0].innerHTML=attrVal.question;
+                var collapsingArea=bankQuestionClone.getElementsByClassName("panel-collapse");
+                collapsingArea[0].id= ("collapser"+ collapseCounter);
+                // console.log("this is the result      ",("collapser"+ collapseCounter));
+
+
+                switch (attrVal.type) {
+                    case 'multi':
+                        bankLines[0].innerHTML = attrVal.answered;
+                        if (attrVal.answer==attrVal.answered){
+                            bankLines[0].className += " list-group-item-success";
+                        }
+                        else{
+                            bankLines[0].className += " list-group-item-danger";
+                            bankLines[4].innerHTML=attrVal.feedback;
+                            bankLines[4].removeAttribute("style");
+                        }
+                        bankLines[1].innerHTML = attrVal.choice1;
+                        bankLines[2].innerHTML = attrVal.choice2;
+                        bankLines[3].innerHTML = attrVal.choice3;
+                        break;
+                    case 'tf':
+                        bankLines[2].parentNode.removeChild(bankLines[2]);
+                        bankLines[2].parentNode.removeChild(bankLines[2]);
+                        if (attrVal.answered === attrVal.answer === "true") {
+                            bankLines[0].className += " list-group-item-success";
+                        }
+                        else if (attrVal.answer === attrVal.answered === "false") {
+                            bankLines[1].className += " list-group-item-success";
+                        }
+                        else if ((attrVal.answered ==="true") && (attrVal.answer==="false")){
+                            bankLines[0].className += " list-group-item-danger";
+                            bankLines[2].innerHTML=attrVal.feedback;
+                            bankLines[2].removeAttribute("style");
+                        }
+                        else{
+                            bankLines[1].className += " list-group-item-danger";
+                            bankLines[2].innerHTML=attrVal.feedback;
+                            bankLines[2].removeAttribute("style");
+                        }
+                        break;
+                    case 'code':
+                        bankLines[0].innerHTML = attrVal.answer;
+                        bankLines[1].parentNode.removeChild(bankLines[1]);
+                        bankLines[1].parentNode.removeChild(bankLines[1]);
+                        bankLines[1].parentNode.removeChild(bankLines[1]);
+                        break;
+                }
+                bankHolder.appendChild(bankQuestionClone);
+                collapseCounter++;
+            }
+        }
+    }
+
+
+
+}
+

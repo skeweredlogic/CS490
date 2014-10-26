@@ -17,7 +17,194 @@
 <!--begin body container-->
 <div class="container" id="outerBoarder" style="padding-top: 5px">
 
-<!-- folding pannel-->
+
+
+
+
+
+
+
+
+
+</div>
+<!-- end of body container-->
+
+<!--begin submit button container-->
+<div class="container" id="submitButtonContainer">
+
+
+</div>
+<!--end submit button container-->
+
+
+<!-- begin template Container  -->
+<div class="container" id="templateContainer" style="display: none">
+
+    <!--button-->
+    <button class="btn btn-default pull-right" type='button'  onclick="getExam();" name="getExam" id="getExamDummy">
+        write junkBank to console (getexam)
+    </button>
+
+    <button class="btn btn-default pull-right" type='button'  onclick="postExam();" id="postExamDummy">
+        submit exam
+    </button>
+
+    <button class="btn btn-default pull-right" type='button'  onclick="createExam();" id="createExamButtonDummy">
+        create exam
+    </button>
+
+    <button class="btn btn-default pull-left" type='button'  onclick="currentExams();" id="examsButtonDummy">
+        exams
+    </button>
+
+    <button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addMultiModal" id="addMultiModBtnDummy">
+        add multiple choice
+    </button>
+
+    <button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addTfModal" id="addTfModBtnDummy">
+        add true/false
+    </button>
+
+    <button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addCodeModal" id="addCodeModBtnDummy">
+        add code question
+    </button>
+
+    <button class="btn btn-default pull-left" type='button'  onclick="pullBank();" id="testBankButtonDummy">
+        view test bank
+    </button>
+
+    <button class="btn btn-default pull-right" type='button' onclick="sendOver('logout');" id="logoutButtonDummy" >
+        logout
+    </button>
+
+    <button class="btn btn-default pull-left" type='button' onclick="createIndex();" id="createIndexDummy" >
+        Home
+    </button>
+
+    <button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#loginModal" id="loginDummy">
+        login
+    </button>
+    <!--end buttons-->
+
+
+    <!-- multiple choice template -->
+
+    <div class="panel panel-default" id="multiDummy">
+        <div class="panel-heading">
+            <h3 class="panel-title">Multiple choice</h3>
+        </div>
+        <div class="panel-body">
+            <div class="radio">
+                <label>
+                    <input type="radio" name="multiDummy" id="optionsRadios1" value="option1">
+
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="multiDummy" id="optionsRadios2" value="option2">
+
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="multiDummy" id="optionsRadios3" value="option3">
+
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="multiDummy" id="optionsRadios4" value="option4">
+
+                </label>
+            </div>
+        </div>
+    </div>
+    <!-- end multiple choice template -->
+
+    <!-- true false template-->
+
+    <div class="panel panel-default" id="tfDummy" >
+        <div class="panel-heading">
+            <h3 class="panel-title">True/False</h3>
+        </div>
+        <div class="panel-body">
+            <div class="radio">
+                <label>
+                    <input type="radio" name="tfDummy" id="falsetrue" value="option1">
+                    True
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="tfDummy" id="falsefalse" value="option2">
+                    False
+                </label>
+            </div>
+        </div>
+    </div>
+    <!-- end true false template-->
+
+    <!-- code template-->
+    <div class="panel panel-default" id="codeDummy" >
+        <div class="panel-heading">
+            <h3 class="panel-title">Coding</h3>
+        </div>
+        <div class="panel-body">
+            <p contenteditable="true" class="panel panel-info" name="codeDummy"></p>
+        </div>
+    </div>
+    <!-- end code template-->
+
+
+    <!--begin exam list template-->
+    <div class="panel panel-default" id="examLister" >
+        <!-- Default panel contents -->
+        <div class="panel-heading">Current Exams</div>
+        <!-- Table -->
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Exam</th>
+                <th>Grades</th>
+                <th>Released</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!--end exam list-->
+
+    <!-- alert bar -->
+    <div class="alert alert-warning" style="display: none" id="alertBar" role="alert">
+
+    </div>
+    <!-- end alert bar-->
+
+    <!--begin exam take button-->
+    <button type="button" class="btn btn-default btn-xs" id="examTakeButton" onclick="getExam(this.name);">
+        <span class="glyphicon glyphicon-pencil"></span>
+    </button>
+    <!--end exam take button-->
+
+    <!--begin review button-->
+    <button type="button" class="btn btn-default btn-xs" id="examReviewButton" onclick="reviewExam(this.name);">
+        <span class="glyphicon glyphicon-list-alt"></span>
+    </button>
+    <!--end review button-->
+
+    <!--begin exam name div-->
+    <div class="input-group">
+        <input type="text" class="form-control" placeholder="Exam name" id="examName">
+    </div>
+    <!--end exam name div-->
+
+    <!-- folding panel-->
     <div class="panel-group" id="accordion">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -32,8 +219,9 @@
                 <ul class="list-group">
                     <li class="list-group-item">True</li>
                     <li class="list-group-item">False</li>
-                    <li class="list-group-item">Morbi leo risus</li>
-                    <li class="list-group-item">Porta ac consectetur ac</li>
+                    <li class="list-group-item"></li>
+                    <li class="list-group-item"></li>
+                    <li class="list-group-item list-group-item-info" style="display: none"></li>
                 </ul>
             </div>
         </div>
@@ -67,167 +255,8 @@
         </div>
     </div>
     <!--end folding panel-->
-
-
-
-
-
-
-
-
 </div>
-<!-- end of body container-->
-
-<!--begin submit button container-->
-<div class="container" id="submitButtonContainer">
-    <button class="btn btn-default pull-right" type='button'  onclick="getExam();" data-eid='invalid'>
-        write junkBank to console
-    </button>
-
-    <button class="btn btn-default pull-left" type='button'  onclick="postExam();" data-eid='invalid' id="postExam">
-        post exam test
-    </button>
-
-    <button class="btn btn-default pull-center" type='button'  onclick="alertz('info','pizza time!','yes');">
-        alert
-    </button>
-
-    <button class="btn btn-default pull-left" type='button'  onclick="currentExams();">
-        current exams
-    </button>
-
-    <button class="btn btn-default pull-right" type='button'  onclick="pullBank();">
-        pull bank
-    </button>
-
-    <button class="btn btn-default pull-right" type='button'  onclick="createExam();">
-        create exam
-    </button>
-</div>
-
-<div class="container">
-    <button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addMultiModal" id="addMultiModBtn">
-        multi
-    </button>
-
-    <button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addTfModal" id="addTfModBtn">
-        tf
-    </button>
-
-    <button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addCodeModal" id="addCodeModBtn">
-        code
-    </button>
-</div>
-<!--end submit button container-->
-
-
-</body>
-
-
-<!-- multiple choice template -->
-
-<div class="panel panel-default" id="multiDummy" style="display: none">
-    <div class="panel-heading">
-        <h3 class="panel-title">Multiple choice</h3>
-    </div>
-    <div class="panel-body">
-        <div class="radio">
-            <label>
-                <input type="radio" name="multiDummy" id="optionsRadios1" value="option1">
-
-            </label>
-        </div>
-        <div class="radio">
-            <label>
-                <input type="radio" name="multiDummy" id="optionsRadios2" value="option2">
-
-            </label>
-        </div>
-        <div class="radio">
-            <label>
-                <input type="radio" name="multiDummy" id="optionsRadios3" value="option3">
-
-            </label>
-        </div>
-        <div class="radio">
-            <label>
-                <input type="radio" name="multiDummy" id="optionsRadios4" value="option4">
-
-            </label>
-        </div>
-    </div>
-</div>
-<!-- end multiple choice template -->
-
-<!-- true false template-->
-
-<div class="panel panel-default" id="tfDummy" style="display: none">
-    <div class="panel-heading">
-        <h3 class="panel-title">True/False</h3>
-    </div>
-    <div class="panel-body">
-        <div class="radio">
-            <label>
-                <input type="radio" name="tfDummy" id="falsetrue" value="option1">
-                True
-            </label>
-        </div>
-        <div class="radio">
-            <label>
-                <input type="radio" name="tfDummy" id="falsefalse" value="option2">
-                False
-            </label>
-        </div>
-    </div>
-</div>
-<!-- end true false template-->
-
-<!-- code template-->
-<div class="panel panel-default" id="codeDummy" style="display: none">
-    <div class="panel-heading">
-        <h3 class="panel-title">Coding</h3>
-    </div>
-    <div class="panel-body">
-        <p contenteditable="true" class="panel panel-info" name="codeDummy"></p>
-    </div>
-</div>
-<!-- end code template-->
-
-
-<!--begin exam list template-->
-<div class="panel panel-default" id="examLister" style="display: none">
-    <!-- Default panel contents -->
-    <div class="panel-heading">Current Exams</div>
-    <!-- Table -->
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Exam</th>
-            <th>Grades</th>
-            <th>Released</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-
-        </tr>
-        </tbody>
-    </table>
-</div>
-
-<!--end exam list-->
-
-<!-- alert bar -->
-<div class="alert alert-warning" style="display: none" id="alertBar" role="alert">
-
-</div>
-<!-- end alert bar-->
-
-<!--begin exam take button-->
-<button type="button" class="btn btn-default btn-xs" style="display:none" id="examTakeButton" onclick="getExam(this.name);">
-    <span class="glyphicon glyphicon-pencil"></span>
-</button>
-<!--end exam take button-->
+<!-- end template container   -->
 
 <!--start add multiple choice modal-->
 
@@ -271,7 +300,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="createMultipleChoice();">Add</button>
+                <button type="button" class="btn btn-primary" onclick="createMultipleChoice(this);">Add</button>
             </div>
         </div>
     </div>
@@ -298,15 +327,14 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="createCoding();">Add</button>
+                <button type="button" class="btn btn-primary" onclick="createCoding(this);">Add</button>
             </div>
         </div>
     </div>
 </div>
 <!--end add coding modal-->
 
-<!--modal add multiple choice-->
-
+<!--modal add true/false -->
 <div class="modal fade" id="addTfModal" tabindex="-1" role="dialog" aria-labelledby="tfModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -334,19 +362,42 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="createTrueFalse();">Add</button>
+                <button type="button" class="btn btn-primary" onclick="createTrueFalse(this)">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end add true/false -->
+
+<!-- Login modal-->
+
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="loginModalLabel">Login</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input class="form-control" name="question" type="text" placeholder="username" id="username" >
+                </div>
+
+                <div class="form-group">
+                    <input class="form-control" name="password" type="password" placeholder="password" id="password"  onkeydown="if (event.keyCode == 13) document.getElementById('loginSendButton').click()">
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="loginSend(this);" id="loginSendButton">Add</button>
             </div>
         </div>
     </div>
 </div>
 
-<!--end add multiple choice-->
+<!--end login Modal-->
 
-<!--begin exam name div-->
-<div class="input-group" style="display: none">
-    <input type="text" class="form-control" placeholder="Exam name" id="examName">
-</div>
-<!--end exam name div-->
-
-
+</body>
 </html>
