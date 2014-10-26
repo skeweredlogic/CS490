@@ -16,6 +16,7 @@ require 'CreateExam.php';
 require 'ListExams.php';
 require 'GetExam.php';
 require 'StudentAnswers.php';
+require 'UserInfo.php';
 
 session_start();
 $data = json_decode(file_get_contents('php://input'),true);
@@ -62,6 +63,10 @@ switch ($data['cmd']) {
 	case "answered":
 		$fun = new StudentAnswers;
 		$fun->post($data);
+		break;
+	case "userinfo":
+		$fun = new UserInfo;
+		$fun->post();
 		break;
 }
 
