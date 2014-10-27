@@ -26,7 +26,7 @@ class ListExams {
 					$grade = $grade + $currgrade['grade'];
 					$accum++;
 				}
-				$return[$curreid][$curreid]['grade'] = (float)$grade/$accum;
+				$return[$curreid][$curreid]['grade'] = $grade ? (float)$grade/$accum : -1;
 				$return[$curreid][$curreid]['grades'] = $studentGrades;
 			}
 			$return['status'] = 1;
