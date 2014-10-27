@@ -1,7 +1,7 @@
 <?php
 class Register {
 	
-	public function post($data) {
+	public function post($data, $url) {
 		$success = false;
 
 		$type = isset($data['type']) ? $data['type'] : 'student';
@@ -9,24 +9,14 @@ class Register {
 		$data['cmd'] = "register";
 
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, "http://web.njit.edu/~rdl4/app.php");
+		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-		$result = json_decode(curl_exec($ch),true);
+		$result = curl_exec($ch);
 
 		curl_close($ch);
-		$success = $result['status'] === 1;
-		if ($success){
-			die(json_encode(array(
-				"status" => 1,
-				"message" => "Registered successfully")));
-		}else{
-			die(json_encode(array(
-				"status" => 0,
-				"message" => "there was an error somewhere")));
-		}
-
+		die($result);
 	}
 
 }

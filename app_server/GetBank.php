@@ -1,9 +1,9 @@
 <?php
 class GetBank {
 	
-	public function post() {
+	public function post($url) {
 		if (isset($_SESSION['uid']) && $_SESSION['login'] === true && $_SESSION['type'] === "instructor") {
-			$q1 = array(
+			/*$q1 = array(
 				"type" => "multi",
 				"question" => "yes?",
 				"answer" => "yes",
@@ -25,7 +25,35 @@ class GetBank {
 				"0" => array("0" => $q1),
 				"1" => array("1" => $q2),
 				"2" => array("2" => $q3));
-			die(json_encode($data));
+			die(json_encode($data));*/
+
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array("cmd" => "bank")));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+			$result = json_decode(curl_exec($ch),true);
+			$return_code = (string)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+			curl_close($ch);
+
+			$success = $result['status'] === 1 && $return_code === "200";
+
+			if($success) {
+				unset($result['status']);
+				die(json_encode($result));
+			}
+			elseif($return_code === "500") {
+				http_response_code(500);
+				die(json_encode(array(
+					"status" => -1,
+					"message" => "server error")));
+			}
+			else {
+				die(json_encode(array(
+					"status" => 0,
+					"message" => "failed to retrieve question bank")));
+			}
 		}
 		elseif(isset($_SESSION['uid']) && $_SESSION['login'] === true && $_SESSION['type'] === "student") {
 			http_response_code(403);

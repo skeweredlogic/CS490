@@ -1,7 +1,7 @@
 <?php
 class Login {
 
-	public function post($data) {
+	public function post($data, $url) {
 		$user = $data['user'];
 		$pass = $data['pass'];
 
@@ -13,7 +13,6 @@ class Login {
 		}
 
 		$ch = curl_init();
-		$url = "http://web.njit.edu/~rdl4/app.php";
 		$senddata = json_encode(array(
 			"uid" => $user,
 			"pass" => $pass,
@@ -28,7 +27,7 @@ class Login {
 		if ($success) {
 			$success = 1;
 			$_SESSION['login'] = true;
-			$_SESSION['type'] = /*$result['type']*/"instructor";
+			$_SESSION['type'] = $result['role'];
 			$_SESSION['uid'] = $user;
 			$message = "success";
 		}
@@ -44,7 +43,7 @@ class Login {
 		die(json_encode(array(
 			"backend" => $success,
 			"njit" => 0,
-			"role" => /*$result['type']*/isset($_SESSION['type']) ? $_SESSION['type'] : "",
+			"role" => isset($_SESSION['type']) ? $_SESSION['type'] : "",
 			"uid" => $user)));
 	}
 

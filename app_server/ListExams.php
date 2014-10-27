@@ -1,11 +1,13 @@
 <?php
 class ListExams {
-	public function post($data) {
+	public function post($url) {
 		if(isset($_SESSION['uid']) && $_SESSION['login'] === true) {
 
 			$data['role'] = $_SESSION['type'];
+			$data['uid'] = $_SESSION['uid'];
+			$data['cmd'] = "exams";
 			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, "http://web.njit.edu/~rdl4/app.php");
+			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
@@ -16,6 +18,7 @@ class ListExams {
 
 			$success = $result['status'] === 1 && $return_code === "200";
 			if ($success) {
+				unset($result['status']);
 				die(json_encode($result));
 			}
 			elseif ($return_code === "500") {

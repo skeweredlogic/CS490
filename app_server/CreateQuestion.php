@@ -1,10 +1,10 @@
 <?php
 class CreateQuestion {
 	
-	public function post($data) {
+	public function post($data, $url) {
 		if(isset($_SESSION['uid']) && $_SESSION['login'] === true && $_SESSION['type'] === "instructor") {
 			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, "http://web.njit.edu/~rdl4/app.php");
+			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 

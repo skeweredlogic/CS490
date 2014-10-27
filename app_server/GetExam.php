@@ -1,14 +1,14 @@
 <?php
 class GetExam {
 	
-	public function post($data) {
+	public function post($data, $url) {
 		if(isset($_SESSION['uid']) && $_SESSION['login'] === true) {
 			$data['role'] = $_SESSION['type'];
 
-			$gotExam = getExam($data);
+			$gotExam = getExam($data,$url);
 
 			if ($data['role'] === 'instructor') {
-				$gotGrades = getGrades($data);
+				$gotGrades = getGrades($data,$url);
 				unset($gotGrades['status']);
 				$gotExam['students'] = $gotGrades;
 				$gotExam['status'] = 1;
@@ -16,7 +16,7 @@ class GetExam {
 
 			else {
 				$data['uid'] = $_SESSION['uid'];
-				$gotStudentExam = getStudentExam($data);
+				$gotStudentExam = getStudentExam($data,$url);
 				foreach($gotExam as $key => $value) {
 					switch ($key) {
 						case "eid":
@@ -50,9 +50,9 @@ class GetExam {
 		}
 	}
 
-	private function getExam($data) {
+	private function getExam($data,$url) {
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, "http://web.njit.edu/~rdl4/app.php");
+		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
@@ -78,10 +78,10 @@ class GetExam {
 		return $gotExam;
 	}
 
-	private function getGrades($data) {
+	private function getGrades($data,$url) {
 		$data['cmd'] = "getGrades";
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, "http://web.njit.edu/~rdl4/app.php");
+		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
@@ -113,10 +113,10 @@ class GetExam {
 		}
 	}
 
-	private function getStudentExam($data) {
+	private function getStudentExam($data,$url) {
 		$data['cmd'] = "getStudentExam";
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, "http://web.njit.edu/~rdl4/app.php");
+		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 

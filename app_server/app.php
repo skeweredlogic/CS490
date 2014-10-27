@@ -21,8 +21,10 @@ require 'UserInfo.php';
 session_start();
 $data = json_decode(file_get_contents('php://input'),true);
 $fun;
+$backend = "http://web.njit.edu/~rj252/backend/app.php";
 
 if (!isset($data['cmd'])) {
+	http_response_code(501);
 	die (json_encode(array(
 		"message" => "command field not set")));
 }
@@ -30,7 +32,7 @@ if (!isset($data['cmd'])) {
 switch ($data['cmd']) {
 	case "login":
 		$fun = new Login;
-		$fun->post($data['data']);
+		$fun->post($data['data'],$backend);
 		break;
 	case "logout":
 		$fun = new Logout;
@@ -38,31 +40,31 @@ switch ($data['cmd']) {
 		break;
 	case "register":
 		$fun = new Register;
-		$fun->post($data['data']);
+		$fun->post($data['data'],$backend);
 		break;
 	case "createquestion":
 		$fun = new CreateQuestion;
-		$fun->post($data);
+		$fun->post($data,$backend);
 		break;
 	case "bank":
 		$fun = new GetBank;
-		$fun->post();
+		$fun->post($backend);
 		break;
 	case "createExam":
 		$fun = new CreateExam;
-		$fun->post($data);
+		$fun->post($data,$backend);
 		break;
 	case "exams":
 		$fun = new ListExams;
-		$fun->post();
+		$fun->post($backend);
 		break;
 	case "getExam":
 		$fun = new GetExam;
-		$fun->post($data);
+		$fun->post($data,$backend);
 		break;
 	case "answered":
 		$fun = new StudentAnswers;
-		$fun->post($data);
+		$fun->post($data,$backend);
 		break;
 	case "userinfo":
 		$fun = new UserInfo;
