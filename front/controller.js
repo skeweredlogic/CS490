@@ -4,12 +4,13 @@
 var outerBoarder;
 var submitButtonContainer;
 var userRole='student';
+var userLoggedIn='';
 
 window.onload= function() {
     outerBoarder = document.getElementById("outerBoarder");
     submitButtonContainer=document.getElementById("submitButtonContainer");
-    //createIndex();
-    testAddAllButtons();
+    createIndex();
+   // testAddAllButtons();
 };
 
 var junkBank = [
@@ -201,6 +202,7 @@ function loginSend(subButton){
 
     sendOver('login',credentials,function(resp){
             console.log("resp in login: ", resp);
+            userLoggedIn=resp.uid;
             if (resp.role=="instructor"){
                 userRole="instructor";
             }
@@ -218,6 +220,7 @@ function loginSend(subButton){
 
                 alertz("warning","Connection error",subButton);
             }
+            createIndex();
         }
     );
 }
@@ -277,7 +280,7 @@ function createTrueFalse(subButton){
 
         var attrName = key;
         var attrVal = question[key];
-        if (attrVal=="" || question['answer']!==("true"||"false"))
+        if (attrVal=="" || !question['answer'])
         {
             alertz('warning','Please fill out all fields',subButton);
             return;
@@ -435,7 +438,7 @@ function createExam(){
         return;
     }
     sendOver('createExam',questions,function(resp){
-        if (resp.staus=1){
+        if (resp.staus==1){
             pageClear();
             createIndex();
             alertz("success","exam creation success","yes");
@@ -637,7 +640,7 @@ function postExam(){
         }
     }
     sendOver('answered',answers,function(resp){
-        if (resp.status=1){
+        if (resp.status==1){
             createIndex();
             alertz('success',"exam successfully submitted","yes");
         }
@@ -692,19 +695,28 @@ function createIndex(){
     addButton("createIndexDummy");
     addButton("examsButtonDummy");
 
-    if (userRole="instructor"){
+    if (userRole=="instructor"){
         addButton("addMultiModBtnDummy");
         addButton("addTfModBtnDummy");
         addButton("addCodeModBtnDummy");
         addButton("testBankButtonDummy");
     }
-    addButton("logoutButtonDummy");
+
+    if(userLoggedIn!='') {
+        addButton("logoutButtonDummy");
+        var logoutButton=document.getElementById('logoutButton');
+        logoutButton.innerHTML=userLoggedIn+", logout";
+    }
 }
 
 function logout(){
     sendOver('logout',null,function(resp){
-        if (resp.status=1){
-            location.reload(true);//if submitted successfully will reload page
+        if (resp.status==1){
+            //userLoggedIn='';
+            //userRole='student';
+           // createIndex();
+            window.location.reload(true);//if submitted successfully will reload page
+
         }
     });
 }
