@@ -3,6 +3,7 @@ class StudentAnswers {
 	
 	public function post($data, $url) {
 		if(isset($_SESSION['uid']) && $_SESSION['login'] === true && $_SESSION['type'] === 'student') {
+			$data['data']['uid'] = $_SESSION['uid'];
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
@@ -15,9 +16,7 @@ class StudentAnswers {
 
 			$success = $result['status'] === 1 && $return_code === "200";
 			if (!$success) {
-				die(json_encode(array(
-					"status" => -1,
-					"message" => "error sending answers to backend")));
+				die(json_encode($result));
 			}
 			elseif ($return_code === "500") {
 				die(json_encode(array(
@@ -26,7 +25,48 @@ class StudentAnswers {
 			}
 
 			$gradeIt = $data['data'];
-			die(json_encode($gradeit));
+			$gradeIt['cmd'] = "bank";
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($gradeIt));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+			$bank = json_decode(curl_exec($ch),true);
+			curl_close($ch);
+			if ($bank['status'] === -1) {
+				die(json_encode(array(
+					"status" => -1)));
+			}
+			unset($bank['status']);
+			unset($gradeIt['cmd']);
+			$eid = $gradeIt['eid'];
+			unset($gradeIt['eid']);
+			$uid = $gradeIt['uid'];
+			unset($gradeIt['uid']);
+			$grade = 0;
+			$qcount = 0;
+			foreach ($gradeIt as $key => $value) {
+				if ($bank[$key][$key]['answer'] === $value) {
+					$grade++;
+				}
+				$qcount++;
+			}
+			$finalgrade = (float)$grade/(float)$qcount;
+			$finalgrade = $finalgrade*100;
+			$send = json_encode(array(
+				"uid" => $uid,
+				"eid" => $eid,
+				"grade" => $finalgrade,
+				"cmd" => "setStudentGrade"));
+
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $send);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+			$return = json_decode(curl_exec($ch),true);
+			curl_close($ch);
+			die(json_encode($return));
 
 		}
 

@@ -4,42 +4,68 @@ class GetExam {
 	public function post($data, $url) {
 		if(isset($_SESSION['uid']) && $_SESSION['login'] === true) {
 			$data['role'] = $_SESSION['type'];
+			$data['eid'] = $data['data'];
 
-			$gotExam = getExam($data,$url);
+			$data['cmd'] = "bank";
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-			if ($data['role'] === 'instructor') {
-				$gotGrades = getGrades($data,$url);
-				unset($gotGrades['status']);
-				$gotExam['students'] = $gotGrades;
-				$gotExam['status'] = 1;
+			$bank = json_decode(curl_exec($ch),true);
+			curl_close($ch);
+			if ($bank['status'] === -1) {
+				die(json_encode(array(
+					"status" => -1)));
+			}
+			unset($bank['status']);
+
+			$data['cmd'] = "getExam";
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+			$exam = json_decode(curl_exec($ch),true);
+			$return_code = (string)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+			curl_close($ch);
+
+			if (isset($exam['status'])) {
+				die(json_encode(array(
+					"status" => -1)));
 			}
 
-			else {
+			$data['cmd'] = "getGrades";
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+			$grades = json_decode(curl_exec($ch),true);
+			$return_code = (string)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+			curl_close($ch);
+			if (isset($grades['status'])) {
+				die(json_encode(array(
+					"status" => -1)));
+			}
+
+			$return = array();
+			$return[0] = array("eid" => $data['data']);
+
+			//if ($data['role'] === "student") {
 				$data['uid'] = $_SESSION['uid'];
-				$gotStudentExam = getStudentExam($data,$url);
-				foreach($gotExam as $key => $value) {
-					switch ($key) {
-						case "eid":
-							$gotExam['eid'] = $gotExam['eid'];
-							break;
-						case "status":
-							$gotExam['status'] = $gotExam['status'];
-							break;
-						case "named":
-							$gotExam['named'] = $gotExam['named'];
-							break;
-						case "students":
-							$gotExam['students'] = $gotExam['students'];
-							break;
-						default:
-							$gotExam[$key]['answered'] = $gotStudentExam[$key]['answered'];
-							break;
-					}
+				$i = 1;
+				foreach ($exam as $key => $value) {
+					$return[$i] = $bank[$key];
+					//$return[$i][$key]['answered'] = isset($grades[$data['uid']]) ? $grades[$data['uid']] : -1;
+					$i++;
 				}
-				$gotExam['status'] = 1;
-			}
+			//}
 
-			die(json_encode($gotExam));
+
+			die(json_encode($return));
 		}
 
 		else {
@@ -49,8 +75,9 @@ class GetExam {
 				"status" => -1)));
 		}
 	}
-
+/*
 	private function getExam($data,$url) {
+		$data['cmd'] = "getExam";
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
@@ -61,23 +88,30 @@ class GetExam {
 
 		curl_close($ch);
 
-		$success = $gotExam['status'] === 1 && $return_code === "200";
-
-		if (!$success) {
+		if (isset($gotExam['status'])) {
 			die(json_encode(array(
-				"status" => -1,
-				"message" => "error getting exam from backend")));
-		}
-		elseif ($return_code === "500") {
-			http_response_code(500);
-			die(json_encode(array(
-				"status" => -1,
-				"message" => "server error")));
+				"status" => -1)));
 		}
 
 		return $gotExam;
 	}
 
+	private function getQuestions($data,$url) {
+		$data['cmd'] = "bank";
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+		$bank = json_decode(curl_exec($ch),true);
+		curl_close($ch);
+		if ($bank['status'] === -1) {
+			die(json_encode(array(
+				"status" => -1)));
+		}
+		return $bank;
+	}
+/*
 	private function getGrades($data,$url) {
 		$data['cmd'] = "getGrades";
 		$ch = curl_init();
@@ -89,28 +123,11 @@ class GetExam {
 		$return_code = (string)curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
 		curl_close($ch);
-
-		$success = $gotGrades['status'] === 1 && $return_code === "200";
-
-		if (!$success) {
+		if (isset($gotGrades['status'])) {
 			die(json_encode(array(
-				"status" => -1,
-				"message" => "error getting student grades from backend")));
+				"status" => -1)));
 		}
-		if ($success) {
-			return $gotGrades;
-		}
-		elseif ($return_code === "500") {
-			http_response_code(500);
-			die(json_encode(array(
-				"status" => -1,
-				"message" => "server error")));
-		}
-		else {
-			die(json_encode(array(
-				"status" => 0,
-				"message" => "Failed to retrieve exam")));
-		}
+		return $gotGrades;
 	}
 
 	private function getStudentExam($data,$url) {
@@ -146,7 +163,7 @@ class GetExam {
 				"status" => 0,
 				"message" => "Failed to retrieve exam")));
 		}
-	}
+	}*/
 
 }
 ?>
