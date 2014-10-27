@@ -2,7 +2,7 @@
 class CreateQuestion {
 	
 	public function post($data) {
-		if(isset($_SESSION['uid']) && $_SESSION['login'] === true) {
+		if(isset($_SESSION['uid']) && $_SESSION['login'] === true && $_SESSION['type'] === "instructor") {
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, "http://web.njit.edu/~rdl4/app.php");
 			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
@@ -28,12 +28,18 @@ class CreateQuestion {
 			else {
 				die(json_encode(array(
 					"status" => 0,
-					"message" => "Failed to create question")));
+					"message" => "Failed to create question",
+					"code" => $return_code)));
 			}
+		}
+		elseif(isset($_SESSION['uid']) && $_SESSION['login'] === true && $_SESSION['type'] === 'student') {
+			http_response_code(403);
+			die(json_encode(array(
+				"status" => -1)));
 		}
 		else {
 			http_response_code(401);
-			header("Location: http://web.njit.edu/~cjr29/cs490/index.html");
+			//header("Location: http://web.njit.edu/~cjr29/cs490/index.html");
 			die(json_encode(array(
 				"status" => -1)));
 		}

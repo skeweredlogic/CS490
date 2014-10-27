@@ -27,13 +27,14 @@ class ListExams {
 			else {
 				die(json_encode(array(
 					"status" => 0,
-					"message" => "Failed to retrieve exam list")));
+					"message" => "Failed to retrieve exam list",
+					"code" => $return_code)));
 			}
 		}
 
 		else {
 			http_response_code(401);
-			header("Location: http://web.njit.edu/~cjr29/cs490/index.html");
+			//header("Location: http://web.njit.edu/~cjr29/cs490/index.html");
 			die(json_encode(array(
 				"status" => -1)));
 		}

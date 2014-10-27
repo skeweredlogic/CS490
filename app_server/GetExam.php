@@ -12,31 +12,39 @@ class GetExam {
 				unset($gotGrades['status']);
 				$gotExam['students'] = $gotGrades;
 				$gotExam['status'] = 1;
-
-				die(json_encode($gotExam));
 			}
 
 			else {
 				$data['uid'] = $_SESSION['uid'];
 				$gotStudentExam = getStudentExam($data);
-				foreach(array_keys($gotExam) as $key) {
+				foreach($gotExam as $key => $value) {
 					switch ($key) {
 						case "eid":
+							$gotExam['eid'] = $gotExam['eid'];
+							break;
 						case "status":
+							$gotExam['status'] = $gotExam['status'];
+							break;
 						case "named":
+							$gotExam['named'] = $gotExam['named'];
+							break;
 						case "students":
+							$gotExam['students'] = $gotExam['students'];
+							break;
 						default:
 							$gotExam[$key]['answered'] = $gotStudentExam[$key]['answered'];
+							break;
 					}
 				}
 				$gotExam['status'] = 1;
-				die(json_encode($gotExam));
 			}
+
+			die(json_encode($gotExam));
 		}
 
 		else {
 			http_response_code(401);
-			header("Location: http://web.njit.edu/~cjr29/cs490/index.html");
+			//header("Location: http://web.njit.edu/~cjr29/cs490/index.html");
 			die(json_encode(array(
 				"status" => -1)));
 		}
@@ -64,7 +72,7 @@ class GetExam {
 			http_response_code(500);
 			die(json_encode(array(
 				"status" => -1,
-				"message" => "server error")))
+				"message" => "server error")));
 		}
 
 		return $gotExam;

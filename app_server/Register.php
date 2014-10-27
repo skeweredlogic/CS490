@@ -23,8 +23,8 @@ class Register {
 				"message" => "Registered successfully")));
 		}else{
 			die(json_encode(array(
-				"status" => 0),
-				"message" => "there was an error somewhere"));
+				"status" => 0,
+				"message" => "there was an error somewhere")));
 		}
 
 	}
