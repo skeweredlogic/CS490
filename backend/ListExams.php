@@ -14,18 +14,20 @@ class ListExams {
 			while ($currexam = mysqli_fetch_array($exams)) {
 				$curreid = $currexam['eid'];
 				$grades = mysqli_query($conn,"SELECT * FROM grades WHERE eid = '$curreid';");
-				$grade = array("0" => -1);
+				$grade = (float)0;
+				$studentGrades = array();
 				$return[$curreid] = array($curreid => array(
 					"named" => $currexam['name'],
 					"released" => "nr",
 					"grade" => $grade));
-				if ($grades != NULL) {
-					while ($currgrade = mysqli_fetch_array($grades)) {
-						$curruid = $currgrade['uid'];
-						$grade[$curruid] = $currgrade['grade'];
-					}
-					$return[$curreid]['grade'] = $grade;
+				$accum = 0;
+				while ($currgrade = mysqli_fetch_array($grades)) {
+					$studentGrades[$currgrade['uid']] = $currgrade['grade'];
+					$grade = $grade + $currgrade['grade'];
+					$accum++;
 				}
+				$return[$curreid][$curreid]['grade'] = (float)$grade/$accum;
+				$return[$curreid][$curreid]['grades'] = $studentGrades;
 			}
 			$return['status'] = 1;
 			die(json_encode($return));
@@ -42,20 +44,23 @@ class ListExams {
 
 			while ($currexam = mysqli_fetch_array($exams)) {
 				$curreid = $currexam['eid'];
-				$grades = mysqli_query($conn,"SELECT * FROM grades where eid = '$curreid';");
+				$grades = mysqli_query($conn,"SELECT * FROM grades WHERE uid = '$uid' AND eid = '$curreid';");
 				$grade = -1;
 				$return[$curreid] = array($curreid => array(
 					"named" => $currexam['name'],
 					"released" => "nr",
-					"grade" => $grade));
-				if ($grades != NULL) {
-					while ($currgrade = mysqli_fetch_array($grades)) {
-						if ($currgrade['uid'] === $uid) {
-							$grade = $currgrade['grade'];
-						}
+					"grade" => -1));
+
+				while ($currgrade = mysqli_fetch_array($grades)) {
+					if (isset($currgrade['grade']) && $curreid === $currgrade['eid']) {
+						$grade = $currgrade['grade'];
 					}
-					$return[$curreid]['grade'] = $grade;
+					else {
+						$grade = -1;
+					}
 				}
+
+				$return[$curreid][$curreid]['grade'] = $grade;
 			}
 			$return['status'] = 1;
 			die(json_encode($return));
