@@ -21,7 +21,7 @@ require 'UserInfo.php';
 session_start();
 $data = json_decode(file_get_contents('php://input'),true);
 $fun;
-$backend = "http://web.njit.edu/~rj252/backend/app.php";
+$backend = "http://osl81.njit.edu/~rdl4/app.php";
 
 if (!isset($data['cmd'])) {
 	http_response_code(501);
