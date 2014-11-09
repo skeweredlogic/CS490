@@ -461,6 +461,10 @@ function currentExams(){
     var examTakeButton=document.getElementById("examTakeButton");
     var examReviewButton=document.getElementById("examReviewButton");
 
+        if (userRole=="instructor") {
+            var gradesLabel = document.getElementById("examListGrades");
+            gradesLabel.innerHTML = "Average grade";//change to grades to average grades
+        }
 
     for (var i = 0; i < resp.length; i++) {
 
