@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title></title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
@@ -66,7 +66,7 @@
     </button>
 
     <button class="btn btn-default pull-left" type='button' data-toggle="modal" data-target="#addCodeModal" id="addCodeModBtnDummy">
-        add code question
+        add open ended question
     </button>
 
     <button class="btn btn-default pull-left" type='button'  onclick="pullBank();" id="testBankButtonDummy">
@@ -166,7 +166,7 @@
             <thead>
             <tr>
                 <th>Exam</th>
-                <th id="examListGrades">Grades</th>
+                <th>Grades</th>
                 <th>Released</th>
             </tr>
             </thead>
@@ -213,6 +213,14 @@
                     <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" id="accordionToggler">
                         Collapsible Group Item #1
                     </a>
+
+                    <button type="button" class="pull-right">
+                        <span class="glyphicon glyphicon-arrow-up"></span>
+                    </button>
+                    <button type="button" class="pull-right">
+                        <span class="glyphicon glyphicon-arrow-down"></span>
+                    </button>
+                    <input id="spinner" name="value" class="pull-right col-xs-1" value="1" max="5" min="1">
                 </h4>
             </div>
             <div id="collapseOne" class="panel-collapse collapse">
@@ -309,7 +317,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="codeModalLabel">Add code question</h4>
+                <h4 class="modal-title" id="codeModalLabel">Add Open ended</h4>
             </div>
             <div class="modal-body" id="modalCodeQuestions">
                 <div class="input-group" >

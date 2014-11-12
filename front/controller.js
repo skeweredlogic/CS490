@@ -3,8 +3,8 @@
  */
 var outerBoarder;
 var submitButtonContainer;
-var userRole='student';
-var userLoggedIn='';
+var userRole;
+var userLoggedIn;
 
 window.onload= function() {
     outerBoarder = document.getElementById("outerBoarder");
@@ -368,6 +368,7 @@ function pullBank(){
                 if (attrName!="eid") {
                     var bankQuestionClone = bankQuestion.cloneNode(true);
                     var bankCheckbox = bankQuestionClone.getElementsByTagName("input");
+                    var spinner = bankCheckbox[1];
                     bankCheckbox = bankCheckbox[0];
                     bankCheckbox.name = key;
                     var bankLines = bankQuestionClone.getElementsByTagName("li");
@@ -379,6 +380,9 @@ function pullBank(){
                     collapsingArea[0].id= ("collapser"+ collapseCounter);
                    // console.log("this is the result      ",("collapser"+ collapseCounter));
 
+                    spinner.id=key+"spinner";
+                   // spinner = $(spinner).spinner();
+                   // var spinner=$("#spinner").spinner();
 
                     switch (attrVal.type) {
                         case 'multi':
@@ -423,7 +427,8 @@ function createExam(){
     for (var x=0; x<checkBoxes.length;x++){
         if (checkBoxes[x].checked && checkBoxes[x].name!="checkboxDummy"){
             var checkboxName=checkBoxes[x].name;
-            questions[checkboxName]='';
+            var weight=1;
+            questions[checkboxName]= weight;
           //  console.log(checkBoxes[x].name);
         }
     }
@@ -437,6 +442,7 @@ function createExam(){
         alertz('warning',"Please select at least one question","yes");
         return;
     }
+    /*
     sendOver('createExam',questions,function(resp){
         if (resp.staus==1){
             pageClear();
@@ -444,6 +450,7 @@ function createExam(){
             alertz("success","exam creation success","yes");
         }
     });
+    */
 }
 
 function currentExams(){
@@ -461,10 +468,6 @@ function currentExams(){
     var examTakeButton=document.getElementById("examTakeButton");
     var examReviewButton=document.getElementById("examReviewButton");
 
-        if (userRole=="instructor") {
-            var gradesLabel = document.getElementById("examListGrades");
-            gradesLabel.innerHTML = "Average grade";//change to grades to average grades
-        }
 
     for (var i = 0; i < resp.length; i++) {
 
@@ -698,19 +701,24 @@ function createIndex(){
     pageClear();
     addButton("createIndexDummy");
     addButton("examsButtonDummy");
+    if (!userLoggedIn ||!userRole) {
+        userInfo();
+    }
+    else{
+        if (userRole=="instructor"){
+            addButton("addMultiModBtnDummy");
+            addButton("addTfModBtnDummy");
+            addButton("addCodeModBtnDummy");
+            addButton("testBankButtonDummy");
+        }
 
-    if (userRole=="instructor"){
-        addButton("addMultiModBtnDummy");
-        addButton("addTfModBtnDummy");
-        addButton("addCodeModBtnDummy");
-        addButton("testBankButtonDummy");
+        if(userLoggedIn!='' && userLoggedIn) {
+            addButton("logoutButtonDummy");
+            var logoutButton=document.getElementById('logoutButton');
+            logoutButton.innerHTML=userLoggedIn+", logout";
+        }
     }
 
-    if(userLoggedIn!='') {
-        addButton("logoutButtonDummy");
-        var logoutButton=document.getElementById('logoutButton');
-        logoutButton.innerHTML=userLoggedIn+", logout";
-    }
 }
 
 function logout(){
@@ -730,7 +738,7 @@ function addButton(button){
     var addButtons;
     addButtons=document.getElementById(button);
     addButtons=addButtons.cloneNode(true);
-    addButtons.id=button.slice(0,-5);
+    addButtons.id=button.slice(0,-5); //slices the "dummy" off of buttons
     submitButtonContainer.appendChild(addButtons);
 }
 
@@ -747,7 +755,9 @@ function testAddAllButtons(){
     addButton("loginDummy")
 }
 
-function reviewExam(){
+function reviewExam(fetchThis){
+
+    sendOver('getExam',fetchThis,function(resp){
     pageClear();
 
     addButton("createIndexDummy");
@@ -769,9 +779,9 @@ function reviewExam(){
     var collapseCounter;
     collapseCounter=4;
 
-    for (var i = 0; i < junkExamReview.length; i++) {
+    for (var i = 0; i < resp.length; i++) {
 
-        var obj = junkExamReview[i];
+        var obj = resp[i];
         for (var key in obj) {
 
             var attrName = key;
@@ -842,6 +852,31 @@ function reviewExam(){
     }
 
 
+    });
 
+};
+
+function userInfo(){
+    sendOver('userinfo',null,function(resp){
+        if (resp.login==1){
+            userLoggedIn=resp.user;
+            userRole=resp.role;
+            buttonAdder();
+        }
+    })
+
+    function buttonAdder(){
+        if (userRole=="instructor"){
+            addButton("addMultiModBtnDummy");
+            addButton("addTfModBtnDummy");
+            addButton("addCodeModBtnDummy");
+            addButton("testBankButtonDummy");
+        }
+
+        if(userLoggedIn!='' && userLoggedIn) {
+            addButton("logoutButtonDummy");
+            var logoutButton=document.getElementById('logoutButton');
+            logoutButton.innerHTML=userLoggedIn+", logout";
+        }
+    }
 }
-
