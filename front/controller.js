@@ -381,8 +381,9 @@ function pullBank(){
                    // console.log("this is the result      ",("collapser"+ collapseCounter));
 
                     spinner.id=key+"spinner";
+                    spinner.name=key+"spinner";
                    // spinner = $(spinner).spinner();
-                   // var spinner=$("#spinner").spinner();
+
 
                     switch (attrVal.type) {
                         case 'multi':
@@ -414,7 +415,10 @@ function pullBank(){
                 }
         }
     }
-
+        var barbs=$("input[name*='spinner']").spinner();
+        barbs=$("span[class*='triangle']").addClass("pull-right");
+        //barbs[0].spinner();
+        console.log(barbs);
     });
 
 
@@ -467,7 +471,7 @@ function currentExams(){
 
     var examTakeButton=document.getElementById("examTakeButton");
     var examReviewButton=document.getElementById("examReviewButton");
-
+    var examReleasebutton=document.getElementById("examReleaseButton");
 
     for (var i = 0; i < resp.length; i++) {
 
@@ -503,7 +507,16 @@ function currentExams(){
 
             nameCell.innerHTML+=("  "+ attrVal.named);
             if (attrVal.released=="nr"){
-            releasedCell.innerHTML="No";
+
+                if(userRole=='instructor'){
+                    var releaseClone=examReleasebutton.cloneNode(true);
+                    releaseClone.setAttribute("name",attrName);
+                    releasedCell.appendChild(releaseClone);
+                    releasedCell.innerHTML+=" No";
+                }
+                else{
+                    releasedCell.innerHTML="No";
+                }
             }
             else{
                 releasedCell.innerHTML="Yes";
@@ -821,10 +834,10 @@ function reviewExam(fetchThis){
                     case 'tf':
                         bankLines[2].parentNode.removeChild(bankLines[2]);
                         bankLines[2].parentNode.removeChild(bankLines[2]);
-                        if (attrVal.answered === attrVal.answer === "true") {
+                        if ((attrVal.answered === attrVal.answer)&&(attrVal.answer === "true")) {
                             bankLines[0].className += " list-group-item-success";
                         }
-                        else if (attrVal.answer === attrVal.answered === "false") {
+                        else if ((attrVal.answered === attrVal.answer)&&(attrVal.answer === "false")) {
                             bankLines[1].className += " list-group-item-success";
                         }
                         else if ((attrVal.answered ==="true") && (attrVal.answer==="false")){
@@ -839,10 +852,18 @@ function reviewExam(fetchThis){
                         }
                         break;
                     case 'code':
-                        bankLines[0].innerHTML = attrVal.answer;
+                        if(attrVal.answered != attrVal.answer){
+                            bankLines[0].className+="list-group-item-danger";
+                        }
+                        else{
+                            bankLines[0].className += " list-group-item-success";
+                        }
+                        bankLines[0].innerHTML = attrVal.answered;
                         bankLines[1].parentNode.removeChild(bankLines[1]);
                         bankLines[1].parentNode.removeChild(bankLines[1]);
-                        bankLines[1].parentNode.removeChild(bankLines[1]);
+                        bankLines[1].innerHTML = attrVal.answer;
+
+
                         break;
                 }
                 bankHolder.appendChild(bankQuestionClone);
@@ -879,4 +900,12 @@ function userInfo(){
             logoutButton.innerHTML=userLoggedIn+", logout";
         }
     }
+}
+
+function releaseExam(releaseThis){
+    sendOver('release',releaseThis,function(resp){
+       if(resp.status===1){
+           currentExams();
+       }
+    });
 }
