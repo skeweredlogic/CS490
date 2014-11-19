@@ -5,6 +5,7 @@ var outerBoarder;
 var submitButtonContainer;
 var userRole;
 var userLoggedIn;
+var checkedQuestions={};
 
 window.onload= function() {
     outerBoarder = document.getElementById("outerBoarder");
@@ -332,13 +333,59 @@ function createCoding(subButton){
 }
 
 
-function pullBank(){
-    sendOver('bank',null,function(resp){
-    pageClear();
+function pullBank(filter,index){
+    var questionsPerPage=5;
+    var data={};
+    if (filter){
+        data['type']=filter;
+    }
+    if (index) {
+        data['low'] = index;
+    }
+    data['num']=questionsPerPage;
+    sendOver('bank',data,function(resp){
+        if(index || filter){
+            partialClear();
+            var nextButton=document.getElementById("nextFilter");
+            nextButton.name=index+questionsPerPage;
+            var prevButton=document.getElementById("prevFilter");
+            prevButton.name=index-questionsPerPage;
+            if (filter){
+                var index0=document.getElementById("index0Filter");
+                index0.name=questionsPerPage; //this makes no sense. pretty sleepy atm.
+            }
+        }
+        else{
+            pageClear();
+            dummyAdder("createIndexDummy");
+            dummyAdder("createExamButtonDummy");
 
-    addButton("createIndexDummy");
-    addButton("createExamButtonDummy");
+            var filterDiv=document.createElement('div');
+            filterDiv.className='container';
+            filterDiv.id='filterDiv';
+            submitButtonContainer.insertBefore(filterDiv,submitButtonContainer.childNodes[0]);
 
+            dummyAdder("multiFilterDummy","filterDiv");
+            dummyAdder("tfFilterDummy","filterDiv");
+            dummyAdder("codeFilterDummy","filterDiv");
+            dummyAdder("fillFilterDummy","filterDiv");
+            dummyAdder("allFilterDummy","filterDiv");
+
+            var directionDiv=document.createElement('div');
+            directionDiv.className='container';
+            directionDiv.id='directionDiv';
+            submitButtonContainer.insertBefore(directionDiv,submitButtonContainer.childNodes[0]);
+
+            dummyAdder("index0FilterDummy","directionDiv");
+            dummyAdder("prevFilterDummy","directionDiv");
+            dummyAdder("nextFilterDummy","directionDiv");
+
+            var nextButton=document.getElementById("nextFilter");
+            nextButton.name=index+questionsPerPage;
+
+
+            var index0button=document.getElementById("index0Filter");
+        }
 
    var examName=document.getElementById("examName").parentNode;
     var examNameClone=examName.cloneNode(true);
@@ -415,29 +462,37 @@ function pullBank(){
                 }
         }
     }
-        var barbs=$("input[name*='spinner']").spinner();
-        barbs=$("span[class*='triangle']").addClass("pull-right");
+        //var barbs=$("input[name*='spinner']").spinner();
+        //barbs=$("span[class*='triangle']").addClass("pull-right");
         //barbs[0].spinner();
-        console.log(barbs);
+       // console.log(barbs);
     });
 
 
 }
 
 function createExam(){
-    var examName=document.getElementById("examName").value;
+    /*var examName=document.getElementById("examName").value;
     var checkBoxes=document.getElementsByTagName("input");
     var questions={};
     for (var x=0; x<checkBoxes.length;x++){
         if (checkBoxes[x].checked && checkBoxes[x].name!="checkboxDummy"){
             var checkboxName=checkBoxes[x].name;
-            var weight=1;
+            var weight;
+            weight=document.getElementById(checkboxName+"spinner").value;
+            if (isNaN(weight) || weight<0 || weight=="") {
+                weight = 1;
+            }
+            else if(weight>5){
+                weight=5;
+            }
             questions[checkboxName]= weight;
+
           //  console.log(checkBoxes[x].name);
         }
     }
     questions['name']=examName;
-
+    console.log(questions);
     if (questions['name']==""){
         alertz('warn','Please enter an exam name', "yes");
         return;
@@ -445,7 +500,7 @@ function createExam(){
     if (Object.keys(questions).length<2){
         alertz('warning',"Please select at least one question","yes");
         return;
-    }
+    }*/
     /*
     sendOver('createExam',questions,function(resp){
         if (resp.staus==1){
@@ -455,13 +510,35 @@ function createExam(){
         }
     });
     */
+
+// new
+    var examName=document.getElementById("examName").value;
+    checkedQuestions['name']=examName;
+    //console.log(questions);
+    if (checkedQuestions['name']==""){
+        alertz('warn','Please enter an exam name', "yes");
+        return;
+    }
+    if (Object.keys(checkedQuestions).length<2){
+        alertz('warning',"Please select at least one question","yes");
+        return;
+    }
+    console.log(checkedQuestions);
+    /*sendOver('createExam',checkedQuestions,function(resp){
+        if (resp.staus==1){
+            pageClear();
+            createIndex();
+            checkedQuestions={};
+            alertz("success","exam creation success","yes");
+        }
+    });*/
 }
 
 function currentExams(){
 
     sendOver('exams',null,function(resp){
     pageClear();
-        addButton("createIndexDummy");
+        dummyAdder("createIndexDummy");
     var examLister=document.getElementById("examLister");
     var listClone=examLister.cloneNode(true);
     outerBoarder.appendChild(listClone);
@@ -533,8 +610,8 @@ function getExam(fetchThis){
         //console.log(junkBank.length);
        // sleep(5000,pageClear());
         pageClear();
-        addButton("createIndexDummy");
-        addButton("postExamDummy");
+        dummyAdder("createIndexDummy");
+        dummyAdder("postExamDummy");
         for (var i = 0; i < resp.length; i++) {
             //console.log('why...');
 
@@ -710,23 +787,29 @@ function pageClear(){
 
 }
 
+function partialClear(){
+    while (outerBoarder.hasChildNodes()){
+        outerBoarder.removeChild(outerBoarder.lastChild);
+    }
+}
+
 function createIndex(){
     pageClear();
-    addButton("createIndexDummy");
-    addButton("examsButtonDummy");
+    dummyAdder("createIndexDummy");
+    dummyAdder("examsButtonDummy");
     if (!userLoggedIn ||!userRole) {
         userInfo();
     }
     else{
         if (userRole=="instructor"){
-            addButton("addMultiModBtnDummy");
-            addButton("addTfModBtnDummy");
-            addButton("addCodeModBtnDummy");
-            addButton("testBankButtonDummy");
+            dummyAdder("addMultiModBtnDummy");
+            dummyAdder("addTfModBtnDummy");
+            dummyAdder("addCodeModBtnDummy");
+            dummyAdder("testBankButtonDummy");
         }
 
         if(userLoggedIn!='' && userLoggedIn) {
-            addButton("logoutButtonDummy");
+            dummyAdder("logoutButtonDummy");
             var logoutButton=document.getElementById('logoutButton');
             logoutButton.innerHTML=userLoggedIn+", logout";
         }
@@ -746,26 +829,31 @@ function logout(){
     });
 }
 
-
-function addButton(button){
-    var addButtons;
-    addButtons=document.getElementById(button);
-    addButtons=addButtons.cloneNode(true);
-    addButtons.id=button.slice(0,-5); //slices the "dummy" off of buttons
-    submitButtonContainer.appendChild(addButtons);
+function dummyAdder(button,id){
+    var dummy;
+    dummy=document.getElementById(button);
+    dummy=dummy.cloneNode(true);
+    dummy.id=button.slice(0,-5); //slices the "dummy" off of buttons
+    if (id && id!="") {
+        var victim = document.getElementById(id);
+        victim.appendChild(dummy);
+    }
+    else{
+        submitButtonContainer.appendChild(dummy);
+    }
 }
 
 function testAddAllButtons(){
-    addButton("createIndexDummy");
-    addButton("examsButtonDummy");
-        addButton("addMultiModBtnDummy");
-        addButton("addTfModBtnDummy");
-        addButton("addCodeModBtnDummy");
-        addButton("testBankButtonDummy");
-    addButton("logoutButtonDummy");
-    addButton("postExamDummy");
-    addButton("getExamDummy");
-    addButton("loginDummy")
+    dummyAdder("createIndexDummy");
+    dummyAdder("examsButtonDummy");
+        dummyAdder("addMultiModBtnDummy");
+        dummyAdder("addTfModBtnDummy");
+        dummyAdder("addCodeModBtnDummy");
+        dummyAdder("testBankButtonDummy");
+    dummyAdder("logoutButtonDummy");
+    dummyAdder("postExamDummy");
+    dummyAdder("getExamDummy");
+    dummyAdder("loginDummy")
 }
 
 function reviewExam(fetchThis){
@@ -773,7 +861,7 @@ function reviewExam(fetchThis){
     sendOver('getExam',fetchThis,function(resp){
     pageClear();
 
-    addButton("createIndexDummy");
+    dummyAdder("createIndexDummy");
 
 
     var examName=document.getElementById("examName").parentNode;
@@ -888,14 +976,14 @@ function userInfo(){
 
     function buttonAdder(){
         if (userRole=="instructor"){
-            addButton("addMultiModBtnDummy");
-            addButton("addTfModBtnDummy");
-            addButton("addCodeModBtnDummy");
-            addButton("testBankButtonDummy");
+            dummyAdder("addMultiModBtnDummy");
+            dummyAdder("addTfModBtnDummy");
+            dummyAdder("addCodeModBtnDummy");
+            dummyAdder("testBankButtonDummy");
         }
 
         if(userLoggedIn!='' && userLoggedIn) {
-            addButton("logoutButtonDummy");
+            dummyAdder("logoutButtonDummy");
             var logoutButton=document.getElementById('logoutButton');
             logoutButton.innerHTML=userLoggedIn+", logout";
         }
@@ -908,4 +996,24 @@ function releaseExam(releaseThis){
            currentExams();
        }
     });
+}
+
+function checkboxMagic(checkbox){
+    if (checkbox.checked){
+        console.log("checking");
+        var weight=document.getElementById(checkbox.name+"spinner").value;
+        if (isNaN(weight) || weight<0 || weight=="") {
+            weight = 1;
+        }
+        else if(weight>5){
+            weight=5;
+        }
+        checkedQuestions[checkbox.name]=weight;
+    }
+    else
+    {
+        console.log("unchecking");
+        delete checkedQuestions[checkbox.name];
+    }
+    console.log(checkedQuestions);
 }
