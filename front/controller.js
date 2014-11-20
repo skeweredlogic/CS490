@@ -383,8 +383,6 @@ function pullBank(filter,index){
             var nextButton=document.getElementById("nextFilter");
             nextButton.name=index+questionsPerPage;
 
-
-            var index0button=document.getElementById("index0Filter");
         }
 
    var examName=document.getElementById("examName").parentNode;
