@@ -332,6 +332,37 @@ function createCoding(subButton){
     });
 }
 
+function createFill(subButton){
+    var question ={
+        'type':'fill',
+        'question':document.getElementById("fillQuestion").value,
+        'expectedOutput':document.getElementById("fillAnswer").value
+    };
+
+    for (var key in question) {
+
+        var attrName = key;
+        var attrVal = question[key];
+        if (attrVal=="")
+        {
+            alertz('warning','Please fill out all fields',subButton);
+            return;
+        }
+    }
+
+    // console.log(question);
+    sendOver('createquestion',question,function(resp){
+        if (resp.status==1){
+            $('addFillModal').modal('hide');
+            alertz("success","question added successfully","yes");
+        }
+        else{
+            alertz("danger",resp.message,subButton);
+        }
+        console.log(resp);
+    });
+}
+
 
 function pullBank(filter,index){
     var questionsPerPage=5;
@@ -804,6 +835,7 @@ function createIndex(){
             dummyAdder("addTfModBtnDummy");
             dummyAdder("addCodeModBtnDummy");
             dummyAdder("testBankButtonDummy");
+            dummyAdder("addFillModBtnDummy");
         }
 
         if(userLoggedIn!='' && userLoggedIn) {
