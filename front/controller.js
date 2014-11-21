@@ -11,7 +11,7 @@ window.onload= function() {
     outerBoarder = document.getElementById("outerBoarder");
     submitButtonContainer=document.getElementById("submitButtonContainer");
     createIndex();
-   // testAddAllButtons();
+    // testAddAllButtons();
 };
 
 var junkBank = [
@@ -147,11 +147,11 @@ var junkExams =[
 ];
 
 /*
-junkExams=JSON.stringify(junkExams);
+ junkExams=JSON.stringify(junkExams);
  console.log(junkExams);
-junkExams =JSON.parse(junkExams);
+ junkExams =JSON.parse(junkExams);
  console.log(junkExams);
-*/
+ */
 
 
 function sendOver(command,data,callback){
@@ -248,7 +248,7 @@ function createMultipleChoice(subButton){
             return;
         }
     }
-   // console.log(question);
+    // console.log(question);
     sendOver('createquestion',question,function(resp){
         if (resp.status==1){
             $('addMultiModal').modal('hide');
@@ -305,7 +305,10 @@ function createCoding(subButton){
     var question ={
         'type':'code',
         'question':document.getElementById("codeQuestion").value,
-        'expectedOutput':document.getElementById("codeAnswer").value
+        'expectedOutput':document.getElementById("codeAnswer").value,
+        'choice1':document.getElementById("codeChoice1").value,
+        'choice2':document.getElementById("codeChoice2").value,
+        'feedback':document.getElementById("codeAnswerFeedback").value
     };
 
     for (var key in question) {
@@ -319,7 +322,7 @@ function createCoding(subButton){
         }
     }
 
-   // console.log(question);
+    // console.log(question);
     sendOver('createquestion',question,function(resp){
         if (resp.status==1){
             $('addCodeModal').modal('hide');
@@ -336,7 +339,8 @@ function createFill(subButton){
     var question ={
         'type':'fill',
         'question':document.getElementById("fillQuestion").value,
-        'expectedOutput':document.getElementById("fillAnswer").value
+        'answer':document.getElementById("fillAnswer").value,
+        'feedback':document.getElementById("fillFeedback").value
     };
 
     for (var key in question) {
@@ -363,7 +367,6 @@ function createFill(subButton){
     });
 }
 
-
 function pullBank(filter,index){
     var questionsPerPage=5;
     var data={};
@@ -371,19 +374,32 @@ function pullBank(filter,index){
         data['type']=filter;
     }
     if (index) {
-        data['low'] = index;
+        data['low'] = Number(index);
+    }
+    else{
+        data['low'] = 0;
     }
     data['num']=questionsPerPage;
     sendOver('bank',data,function(resp){
         if(index || filter){
             partialClear();
             var nextButton=document.getElementById("nextFilter");
-            nextButton.name=index+questionsPerPage;
+            if (index) {
+                nextButton.name = Number(index) + Number(questionsPerPage);
+            }
+            else{
+                nextButton.name = Number(questionsPerPage);
+            }
             var prevButton=document.getElementById("prevFilter");
-            prevButton.name=index-questionsPerPage;
+            if (index<0) {
+                prevButton.name = Number(index) - Number(questionsPerPage);
+            }
+            else{
+                prevButton.name=0;
+            }
             if (filter){
                 var index0=document.getElementById("index0Filter");
-                index0.name=questionsPerPage; //this makes no sense. pretty sleepy atm.
+                index0.name=filter; //this makes no sense. pretty sleepy atm.
             }
         }
         else{
@@ -412,35 +428,35 @@ function pullBank(filter,index){
             dummyAdder("nextFilterDummy","directionDiv");
 
             var nextButton=document.getElementById("nextFilter");
-            nextButton.name=index+questionsPerPage;
+            nextButton.name=Number(questionsPerPage);
 
         }
 
-   var examName=document.getElementById("examName").parentNode;
-    var examNameClone=examName.cloneNode(true);
-    //examNameClone.removeAttribute("style");
-    examNameClone.style.paddingBottom="5px";
-    outerBoarder.appendChild(examNameClone);
-   var bankHolder=document.getElementById("accordion");
-   var bankQuestion=bankHolder.getElementsByClassName("panel-default");
-    bankQuestion=bankQuestion[0];
-    bankHolder=bankHolder.cloneNode(true);
-    //bankHolder.removeAttribute("style");
-    bankHolder.id="clonedBankHolder";
-    bankHolder.innerHTML="";
-    outerBoarder.appendChild(bankHolder);
-    var collapseCounter;
-    collapseCounter=4;
+        var examName=document.getElementById("examName").parentNode;
+        var examNameClone=examName.cloneNode(true);
+        //examNameClone.removeAttribute("style");
+        examNameClone.style.paddingBottom="5px";
+        outerBoarder.appendChild(examNameClone);
+        var bankHolder=document.getElementById("accordion");
+        var bankQuestion=bankHolder.getElementsByClassName("panel-default");
+        bankQuestion=bankQuestion[0];
+        bankHolder=bankHolder.cloneNode(true);
+        //bankHolder.removeAttribute("style");
+        bankHolder.id="clonedBankHolder";
+        bankHolder.innerHTML="";
+        outerBoarder.appendChild(bankHolder);
+        var collapseCounter;
+        collapseCounter=4;
 
-    for (var i = 0; i < resp.length; i++) {
+        for (var i in resp) {
 
-        var obj = resp[i];
-        for (var key in obj) {
+            var obj = resp[i];
+            for (var key in obj) {
 
-            var attrName = key;
-            var attrVal = obj[key];
-            //console.log(attrName," :  ",attrVal);
-            // console.log(attrName);
+                var attrName = key;
+                var attrVal = obj[key];
+                //console.log(attrName," :  ",attrVal);
+                // console.log(attrName);
                 if (attrName!="eid") {
                     var bankQuestionClone = bankQuestion.cloneNode(true);
                     var bankCheckbox = bankQuestionClone.getElementsByTagName("input");
@@ -454,11 +470,11 @@ function pullBank(filter,index){
                     bankAnchor[0].innerHTML=attrVal.question;
                     var collapsingArea=bankQuestionClone.getElementsByClassName("panel-collapse");
                     collapsingArea[0].id= ("collapser"+ collapseCounter);
-                   // console.log("this is the result      ",("collapser"+ collapseCounter));
+                    // console.log("this is the result      ",("collapser"+ collapseCounter));
 
                     spinner.id=key+"spinner";
                     spinner.name=key+"spinner";
-                   // spinner = $(spinner).spinner();
+                    // spinner = $(spinner).spinner();
 
 
                     switch (attrVal.type) {
@@ -479,22 +495,28 @@ function pullBank(filter,index){
                                 bankLines[1].className += " list-group-item-success";
                             }
                             break;
-                        case 'code':
+                        case 'fill':
                             bankLines[0].innerHTML = attrVal.answer;
                             bankLines[1].parentNode.removeChild(bankLines[1]);
                             bankLines[1].parentNode.removeChild(bankLines[1]);
                             bankLines[1].parentNode.removeChild(bankLines[1]);
                             break;
+                        case 'code':
+                            bankLines[0].innerHTML = attrVal.answer;
+                            bankLines[1].parentNode.removeChild(bankLines[1]);
+                            bankLines[1].innerHTML = attrVal.choice1;
+                            bankLines[2].innerHTML = attrVal.choice2;
+                            break;
                     }
                     bankHolder.appendChild(bankQuestionClone);
                     collapseCounter++;
                 }
+            }
         }
-    }
         //var barbs=$("input[name*='spinner']").spinner();
         //barbs=$("span[class*='triangle']").addClass("pull-right");
         //barbs[0].spinner();
-       // console.log(barbs);
+        // console.log(barbs);
     });
 
 
@@ -502,43 +524,43 @@ function pullBank(filter,index){
 
 function createExam(){
     /*var examName=document.getElementById("examName").value;
-    var checkBoxes=document.getElementsByTagName("input");
-    var questions={};
-    for (var x=0; x<checkBoxes.length;x++){
-        if (checkBoxes[x].checked && checkBoxes[x].name!="checkboxDummy"){
-            var checkboxName=checkBoxes[x].name;
-            var weight;
-            weight=document.getElementById(checkboxName+"spinner").value;
-            if (isNaN(weight) || weight<0 || weight=="") {
-                weight = 1;
-            }
-            else if(weight>5){
-                weight=5;
-            }
-            questions[checkboxName]= weight;
+     var checkBoxes=document.getElementsByTagName("input");
+     var questions={};
+     for (var x=0; x<checkBoxes.length;x++){
+     if (checkBoxes[x].checked && checkBoxes[x].name!="checkboxDummy"){
+     var checkboxName=checkBoxes[x].name;
+     var weight;
+     weight=document.getElementById(checkboxName+"spinner").value;
+     if (isNaN(weight) || weight<0 || weight=="") {
+     weight = 1;
+     }
+     else if(weight>5){
+     weight=5;
+     }
+     questions[checkboxName]= weight;
 
-          //  console.log(checkBoxes[x].name);
-        }
-    }
-    questions['name']=examName;
-    console.log(questions);
-    if (questions['name']==""){
-        alertz('warn','Please enter an exam name', "yes");
-        return;
-    }
-    if (Object.keys(questions).length<2){
-        alertz('warning',"Please select at least one question","yes");
-        return;
-    }*/
+     //  console.log(checkBoxes[x].name);
+     }
+     }
+     questions['name']=examName;
+     console.log(questions);
+     if (questions['name']==""){
+     alertz('warn','Please enter an exam name', "yes");
+     return;
+     }
+     if (Object.keys(questions).length<2){
+     alertz('warning',"Please select at least one question","yes");
+     return;
+     }*/
     /*
-    sendOver('createExam',questions,function(resp){
-        if (resp.staus==1){
-            pageClear();
-            createIndex();
-            alertz("success","exam creation success","yes");
-        }
-    });
-    */
+     sendOver('createExam',questions,function(resp){
+     if (resp.staus==1){
+     pageClear();
+     createIndex();
+     alertz("success","exam creation success","yes");
+     }
+     });
+     */
 
 // new
     var examName=document.getElementById("examName").value;
@@ -554,94 +576,99 @@ function createExam(){
     }
     console.log(checkedQuestions);
     /*sendOver('createExam',checkedQuestions,function(resp){
-        if (resp.staus==1){
-            pageClear();
-            createIndex();
-            checkedQuestions={};
-            alertz("success","exam creation success","yes");
-        }
-    });*/
+     if (resp.staus==1){
+     pageClear();
+     createIndex();
+     checkedQuestions={};
+     alertz("success","exam creation success","yes");
+     }
+     });*/
 }
 
 function currentExams(){
 
     sendOver('exams',null,function(resp){
-    pageClear();
+        pageClear();
         dummyAdder("createIndexDummy");
-    var examLister=document.getElementById("examLister");
-    var listClone=examLister.cloneNode(true);
-    outerBoarder.appendChild(listClone);
-    listClone=listClone.getElementsByClassName("table");
-    listClone=listClone[0];
-   // console.log(examLister);
+        var examLister=document.getElementById("examLister");
+        var listClone=examLister.cloneNode(true);
+        outerBoarder.appendChild(listClone);
+        listClone=listClone.getElementsByClassName("table");
+        listClone=listClone[0];
+        // console.log(examLister);
 
-    var examTakeButton=document.getElementById("examTakeButton");
-    var examReviewButton=document.getElementById("examReviewButton");
-    var examReleasebutton=document.getElementById("examReleaseButton");
+        var examTakeButton=document.getElementById("examTakeButton");
+        var examReviewButton=document.getElementById("examReviewButton");
+        var examReleasebutton=document.getElementById("examReleaseButton");
 
-    for (var i = 0; i < resp.length; i++) {
+        for (var i = 0; i < resp.length; i++) {
 
-        var obj = resp[i];
-        for (var key in obj) {
+            var obj = resp[i];
+            for (var key in obj) {
 
-            var attrName = key;
-            var attrVal = obj[key];
-            // console.log(attrName," :  ",attrVal);
-            // console.log(attrName);
-            var newRow=listClone.insertRow();
-            var nameCell=newRow.insertCell();
-            var gradesCell=newRow.insertCell();
-            var releasedCell=newRow.insertCell();
+                var attrName = key;
+                var attrVal = obj[key];
+                // console.log(attrName," :  ",attrVal);
+                // console.log(attrName);
+                var newRow=listClone.insertRow();
+                var nameCell=newRow.insertCell();
+                var gradesCell=newRow.insertCell();
+                var releasedCell=newRow.insertCell();
 
 
 
-            if (attrVal.grade=="-1"){
-                var buttonClone=examTakeButton.cloneNode(true);
-              //  buttonClone.removeAttribute("style");
-                buttonClone.setAttribute("name",attrName);
-                nameCell.appendChild(buttonClone);
+                if (attrVal.grade=="-1" && userRole!='instructor'){
+                    var buttonClone=examTakeButton.cloneNode(true);
+                    //  buttonClone.removeAttribute("style");
+                    buttonClone.setAttribute("name",attrName);
+                    nameCell.appendChild(buttonClone);
 
-                gradesCell.innerHTML="Not yet taken";
-            }
-            else{
-                var reviewButtonClone=examReviewButton.cloneNode(true);
-                reviewButtonClone.setAttribute("name",attrName);
-                nameCell.appendChild(reviewButtonClone);
-
-                gradesCell.innerHTML=attrVal.grade;
-            }
-
-            nameCell.innerHTML+=("  "+ attrVal.named);
-            if (attrVal.released=="nr"){
-
-                if(userRole=='instructor'){
-                    var releaseClone=examReleasebutton.cloneNode(true);
-                    releaseClone.setAttribute("name",attrName);
-                    releasedCell.appendChild(releaseClone);
-                    releasedCell.innerHTML+=" No";
+                    gradesCell.innerHTML="Not yet taken";
                 }
                 else{
-                    releasedCell.innerHTML="No";
+                    var reviewButtonClone=examReviewButton.cloneNode(true);
+                    reviewButtonClone.setAttribute("name",attrName);
+                    nameCell.appendChild(reviewButtonClone);
+
+                    if (userRole=='instructor' && attrVal.grade=="-1"){
+                        gradesCell.innerHTML="Not yet taken";
+                    }
+                    else{
+                        gradesCell.innerHTML=attrVal.grade;
+                    }
+                }
+
+                nameCell.innerHTML+=("  "+ attrVal.named);
+                if (attrVal.released=="nr"){
+
+                    if(userRole=='instructor'){
+                        var releaseClone=examReleasebutton.cloneNode(true);
+                        releaseClone.setAttribute("name",attrName);
+                        releasedCell.appendChild(releaseClone);
+                        releasedCell.innerHTML+=" No";
+                    }
+                    else{
+                        releasedCell.innerHTML="No";
+                    }
+                }
+                else{
+                    releasedCell.innerHTML="Yes";
                 }
             }
-            else{
-                releasedCell.innerHTML="Yes";
-            }
         }
-    }
     });
 }
 
 function getExam(fetchThis){
     //change junkBanks to resp and uncomment the sendover and it's ending curly brace
 
-     sendOver('getExam', fetchThis,function(resp){
+    sendOver('getExam', fetchThis,function(resp){
         //console.log(junkBank.length);
-       // sleep(5000,pageClear());
+        // sleep(5000,pageClear());
         pageClear();
         dummyAdder("createIndexDummy");
         dummyAdder("postExamDummy");
-        for (var i = 0; i < resp.length; i++) {
+        for (var i in resp) {
             //console.log('why...');
 
             var obj = resp[i];
@@ -650,12 +677,12 @@ function getExam(fetchThis){
                 var attrName = key;
                 var attrVal = obj[key];
                 /*console.log(attrName," :  ",attrVal);
-                console.log(attrName);*/
-               if (attrName=="eid"){
-                   // exam id is saved to postExam button
-                   var eidSetter =document.getElementById("postExam");
-                      eidSetter.name=attrVal;
-               }
+                 console.log(attrName);*/
+                if (attrName=="eid"){
+                    // exam id is saved to postExam button
+                    var eidSetter =document.getElementById("postExam");
+                    eidSetter.name=attrVal;
+                }
                 switch (attrVal.type) {
                     case 'multi':
                         var multiDummy = document.getElementById("multiDummy");
@@ -694,12 +721,12 @@ function getExam(fetchThis){
                         theRadios[0].innerHTML=attrVal.question;
 
 
-                       outerBoarder.appendChild(multiCloned);
+                        outerBoarder.appendChild(multiCloned);
                         break;
                     case 'tf':
                         var tfDummy = document.getElementById("tfDummy");
                         var tfCloned = tfDummy.cloneNode(true);
-                       // tfCloned.removeAttribute("style");
+                        // tfCloned.removeAttribute("style");
                         tfCloned.setAttribute("id", key);
                         var tfRadios;
                         tfRadios = tfCloned.getElementsByTagName("input");
@@ -712,10 +739,25 @@ function getExam(fetchThis){
 
                         outerBoarder.appendChild(tfCloned);
                         break;
+                    case 'fill':
+                        var fillDummy = document.getElementById("fillDummy");
+                        var fillCloned = fillDummy.cloneNode(true);
+                        // codeCloned.removeAttribute("style");
+                        fillCloned.setAttribute("id", key);
+                        var fillTextArea;
+                        fillTextArea = fillCloned.getElementsByTagName("p");
+                        fillTextArea[0].setAttribute("name", key);
+
+                        var fillQuestion= fillCloned.getElementsByTagName("h3");
+                        fillQuestion[0].innerHTML=attrVal.question;
+
+                        outerBoarder.appendChild(fillCloned);
+                        break;
+
                     case 'code':
                         var codeDummy = document.getElementById("codeDummy");
                         var codeCloned = codeDummy.cloneNode(true);
-                       // codeCloned.removeAttribute("style");
+                        // codeCloned.removeAttribute("style");
                         codeCloned.setAttribute("id", key);
                         var codeTextArea;
                         codeTextArea = codeCloned.getElementsByTagName("p");
@@ -729,12 +771,12 @@ function getExam(fetchThis){
                 }
             }
         }
-  });
+    });
 }
 
 function postExam(){
     var eid=document.getElementById('postExam').name;
-   // console.log(eid);
+    // console.log(eid);
     if(eid=="undefined"){
         alertz("warning","eid not found, please retry","yes")
     }
@@ -758,19 +800,31 @@ function postExam(){
             }
         }
     }
-    var codeAreas = document.getElementsByTagName("p");
-    for (var x=0; x<codeAreas.length; x++){
-        var codeAreaName=codeAreas[x].getAttribute("name");
-        if (codeAreaName!="codeDummy"){
-            answers[codeAreaName]=codeAreas[x].innerHTML;
+    var fillAreas = document.getElementsByTagName("p");
+    for (var x=0; x<fillAreas.length; x++){
+        var fillArea=fillAreas[x];
+        var fillAreaName=fillArea.getAttribute("name");
+        if (fillAreaName!="codeDummy" && fillAreaName!="codeVar1Dummy" && fillAreaName!="codeVar2Dummy"){
+            if(fillArea.dataset.fill=="fill") {
+                answers[fillAreaName] = fillAreas[x].innerHTML;
+            }
+            else if(fillArea.dataset.var1="var1"){
+                answers[fillAreaName] ={};
+                answers[fillAreaName]['var1']= fillArea.innerHTML;
+            }
+            else if(fillArea.dataset.var2="var2"){
+                answers[fillAreaName]['var2']= fillArea.innerHTML;
+            }
         }
     }
+    console.log(answers);
+    /*
     sendOver('answered',answers,function(resp){
         if (resp.status==1){
             createIndex();
             alertz('success',"exam successfully submitted","yes");
         }
-    });
+    });*/
 }
 
 function alertz(level,message,onPage){
@@ -805,7 +859,7 @@ function alertz(level,message,onPage){
 
 function pageClear(){
 
-   while (outerBoarder.hasChildNodes()){
+    while (outerBoarder.hasChildNodes()){
         outerBoarder.removeChild(outerBoarder.lastChild);
     }
 
@@ -834,8 +888,8 @@ function createIndex(){
             dummyAdder("addMultiModBtnDummy");
             dummyAdder("addTfModBtnDummy");
             dummyAdder("addCodeModBtnDummy");
-            dummyAdder("testBankButtonDummy");
             dummyAdder("addFillModBtnDummy");
+            dummyAdder("testBankButtonDummy");
         }
 
         if(userLoggedIn!='' && userLoggedIn) {
@@ -852,7 +906,7 @@ function logout(){
         if (resp.status==1){
             //userLoggedIn='';
             //userRole='student';
-           // createIndex();
+            // createIndex();
             window.location.reload(true);//if submitted successfully will reload page
 
         }
@@ -876,10 +930,10 @@ function dummyAdder(button,id){
 function testAddAllButtons(){
     dummyAdder("createIndexDummy");
     dummyAdder("examsButtonDummy");
-        dummyAdder("addMultiModBtnDummy");
-        dummyAdder("addTfModBtnDummy");
-        dummyAdder("addCodeModBtnDummy");
-        dummyAdder("testBankButtonDummy");
+    dummyAdder("addMultiModBtnDummy");
+    dummyAdder("addTfModBtnDummy");
+    dummyAdder("addCodeModBtnDummy");
+    dummyAdder("testBankButtonDummy");
     dummyAdder("logoutButtonDummy");
     dummyAdder("postExamDummy");
     dummyAdder("getExamDummy");
@@ -889,111 +943,121 @@ function testAddAllButtons(){
 function reviewExam(fetchThis){
 
     sendOver('getExam',fetchThis,function(resp){
-    pageClear();
+        pageClear();
 
-    dummyAdder("createIndexDummy");
-
-
-    var examName=document.getElementById("examName").parentNode;
-    var examNameClone=examName.cloneNode(true);
-    //examNameClone.removeAttribute("style");
-    examNameClone.style.paddingBottom="5px";
-    outerBoarder.appendChild(examNameClone);
-    var bankHolder=document.getElementById("accordion");
-    var bankQuestion=bankHolder.getElementsByClassName("panel-default");
-    bankQuestion=bankQuestion[0];
-    bankHolder=bankHolder.cloneNode(true);
-    //bankHolder.removeAttribute("style");
-    bankHolder.id="clonedBankHolder";
-    bankHolder.innerHTML="";
-    outerBoarder.appendChild(bankHolder);
-    var collapseCounter;
-    collapseCounter=4;
-
-    for (var i = 0; i < resp.length; i++) {
-
-        var obj = resp[i];
-        for (var key in obj) {
-
-            var attrName = key;
-            var attrVal = obj[key];
-            //console.log(attrName," :  ",attrVal);
-            // console.log(attrName);
-            if (attrName!="eid") {
-                var bankQuestionClone = bankQuestion.cloneNode(true);
-                var bankCheckbox = bankQuestionClone.getElementsByTagName("input");
-                bankCheckbox = bankCheckbox[0];
-                bankCheckbox.name = key;
-                var bankLines = bankQuestionClone.getElementsByTagName("li");
-
-                var bankAnchor = bankQuestionClone.getElementsByTagName("a");
-                bankAnchor[0].href = "#collapser" + collapseCounter;
-                bankAnchor[0].innerHTML=attrVal.question;
-                var collapsingArea=bankQuestionClone.getElementsByClassName("panel-collapse");
-                collapsingArea[0].id= ("collapser"+ collapseCounter);
-                // console.log("this is the result      ",("collapser"+ collapseCounter));
+        dummyAdder("createIndexDummy");
 
 
-                switch (attrVal.type) {
-                    case 'multi':
-                        bankLines[0].innerHTML = attrVal.answered;
-                        if (attrVal.answer==attrVal.answered){
-                            bankLines[0].className += " list-group-item-success";
-                        }
-                        else{
-                            bankLines[0].className += " list-group-item-danger";
-                            bankLines[4].innerHTML=attrVal.feedback;
-                            bankLines[4].removeAttribute("style");
-                        }
-                        bankLines[1].innerHTML = attrVal.choice1;
-                        bankLines[2].innerHTML = attrVal.choice2;
-                        bankLines[3].innerHTML = attrVal.choice3;
-                        break;
-                    case 'tf':
-                        bankLines[2].parentNode.removeChild(bankLines[2]);
-                        bankLines[2].parentNode.removeChild(bankLines[2]);
-                        if ((attrVal.answered === attrVal.answer)&&(attrVal.answer === "true")) {
-                            bankLines[0].className += " list-group-item-success";
-                        }
-                        else if ((attrVal.answered === attrVal.answer)&&(attrVal.answer === "false")) {
-                            bankLines[1].className += " list-group-item-success";
-                        }
-                        else if ((attrVal.answered ==="true") && (attrVal.answer==="false")){
-                            bankLines[0].className += " list-group-item-danger";
-                            bankLines[2].innerHTML=attrVal.feedback;
-                            bankLines[2].removeAttribute("style");
-                        }
-                        else{
-                            bankLines[1].className += " list-group-item-danger";
-                            bankLines[2].innerHTML=attrVal.feedback;
-                            bankLines[2].removeAttribute("style");
-                        }
-                        break;
-                    case 'code':
-                        if(attrVal.answered != attrVal.answer){
-                            bankLines[0].className+="list-group-item-danger";
-                        }
-                        else{
-                            bankLines[0].className += " list-group-item-success";
-                        }
-                        bankLines[0].innerHTML = attrVal.answered;
-                        bankLines[1].parentNode.removeChild(bankLines[1]);
-                        bankLines[1].parentNode.removeChild(bankLines[1]);
-                        bankLines[1].innerHTML = attrVal.answer;
+        var examName=document.getElementById("examName").parentNode;
+        var examNameClone=examName.cloneNode(true);
+        //examNameClone.removeAttribute("style");
+        examNameClone.style.paddingBottom="5px";
+        outerBoarder.appendChild(examNameClone);
+        var bankHolder=document.getElementById("accordion");
+        var bankQuestion=bankHolder.getElementsByClassName("panel-default");
+        bankQuestion=bankQuestion[0];
+        bankHolder=bankHolder.cloneNode(true);
+        //bankHolder.removeAttribute("style");
+        bankHolder.id="clonedBankHolder";
+        bankHolder.innerHTML="";
+        outerBoarder.appendChild(bankHolder);
+        var collapseCounter;
+        collapseCounter=4;
+
+        for (var i in resp) {
+
+            var obj = resp[i];
+            for (var key in obj) {
+
+                var attrName = key;
+                var attrVal = obj[key];
+                //console.log(attrName," :  ",attrVal);
+                // console.log(attrName);
+                if (attrName!="eid") {
+                    var bankQuestionClone = bankQuestion.cloneNode(true);
+                    var bankCheckbox = bankQuestionClone.getElementsByTagName("input");
+                    bankCheckbox = bankCheckbox[0];
+                    bankCheckbox.name = key;
+                    var bankLines = bankQuestionClone.getElementsByTagName("li");
+
+                    var bankAnchor = bankQuestionClone.getElementsByTagName("a");
+                    bankAnchor[0].href = "#collapser" + collapseCounter;
+                    bankAnchor[0].innerHTML=attrVal.question;
+                    var collapsingArea=bankQuestionClone.getElementsByClassName("panel-collapse");
+                    collapsingArea[0].id= ("collapser"+ collapseCounter);
+                    // console.log("this is the result      ",("collapser"+ collapseCounter));
 
 
-                        break;
+                    switch (attrVal.type) {
+                        case 'multi':
+                            bankLines[0].innerHTML = attrVal.answered;
+                            if (attrVal.answer==attrVal.answered){
+                                bankLines[0].className += " list-group-item-success";
+                            }
+                            else{
+                                bankLines[0].className += " list-group-item-danger";
+                                bankLines[4].innerHTML=attrVal.feedback;
+                                bankLines[4].removeAttribute("style");
+                            }
+                            bankLines[1].innerHTML = attrVal.choice1;
+                            bankLines[2].innerHTML = attrVal.choice2;
+                            bankLines[3].innerHTML = attrVal.choice3;
+                            break;
+                        case 'tf':
+                            bankLines[2].parentNode.removeChild(bankLines[2]);
+                            bankLines[2].parentNode.removeChild(bankLines[2]);
+                            if ((attrVal.answered === attrVal.answer)&&(attrVal.answer === "true")) {
+                                bankLines[0].className += " list-group-item-success";
+                            }
+                            else if ((attrVal.answered === attrVal.answer)&&(attrVal.answer === "false")) {
+                                bankLines[1].className += " list-group-item-success";
+                            }
+                            else if ((attrVal.answered ==="true") && (attrVal.answer==="false")){
+                                bankLines[0].className += " list-group-item-danger";
+                                bankLines[2].innerHTML=attrVal.feedback;
+                                bankLines[2].removeAttribute("style");
+                            }
+                            else{
+                                bankLines[1].className += " list-group-item-danger";
+                                bankLines[2].innerHTML=attrVal.feedback;
+                                bankLines[2].removeAttribute("style");
+                            }
+                            break;
+                        case 'fill':
+                            if(attrVal.answered != attrVal.answer){
+                                bankLines[0].className+="list-group-item-danger";
+                            }
+                            else{
+                                bankLines[0].className += " list-group-item-success";
+                            }
+                            bankLines[0].innerHTML = attrVal.answered;
+                            bankLines[1].parentNode.removeChild(bankLines[1]);
+                            bankLines[1].parentNode.removeChild(bankLines[1]);
+                            bankLines[1].innerHTML = attrVal.answer;
+                            break;
+                        case 'code':
+                            if(attrVal.answered != attrVal.answer){
+                                bankLines[0].className+="list-group-item-danger";
+                            }
+                            else{
+                                bankLines[0].className += " list-group-item-success";
+                            }
+                            bankLines[0].innerHTML = attrVal.answered;
+                            bankLines[1].parentNode.removeChild(bankLines[1]);
+                            bankLines[1].parentNode.removeChild(bankLines[1]);
+                            bankLines[1].innerHTML = attrVal.answer;
+                            break;
+                    }
+                    bankHolder.appendChild(bankQuestionClone);
+                    collapseCounter++;
                 }
-                bankHolder.appendChild(bankQuestionClone);
-                collapseCounter++;
             }
         }
-    }
 
 
     });
 
-};
+}
 
 function userInfo(){
     sendOver('userinfo',null,function(resp){
@@ -1002,7 +1066,7 @@ function userInfo(){
             userRole=resp.role;
             buttonAdder();
         }
-    })
+    });
 
     function buttonAdder(){
         if (userRole=="instructor"){
@@ -1022,9 +1086,9 @@ function userInfo(){
 
 function releaseExam(releaseThis){
     sendOver('release',releaseThis,function(resp){
-       if(resp.status===1){
-           currentExams();
-       }
+        if(resp.status===1){
+            currentExams();
+        }
     });
 }
 
