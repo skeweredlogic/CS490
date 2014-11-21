@@ -427,9 +427,8 @@ function pullBank(filter,index){
             dummyAdder("prevFilterDummy","directionDiv");
             dummyAdder("nextFilterDummy","directionDiv");
 
-            var nextButton=document.getElementById("nextFilter");
-            nextButton.name=Number(questionsPerPage);
-
+            var nextButton2=document.getElementById("nextFilter");
+            nextButton2.name=Number(questionsPerPage);
         }
 
         var examName=document.getElementById("examName").parentNode;
@@ -517,6 +516,15 @@ function pullBank(filter,index){
         //barbs=$("span[class*='triangle']").addClass("pull-right");
         //barbs[0].spinner();
         // console.log(barbs);
+        var checkboxes = document.getElementsByTagName("input");
+       // delete checkboxes[0];
+        for (var x in checkboxes){
+            var xName = checkboxes[x].name;
+            if (xName in checkedQuestions){
+                var inputs=document.getElementsByName(xName);
+                inputs[0].checked=true;
+            }
+        }
     });
 
 
@@ -615,45 +623,54 @@ function currentExams(){
                 var gradesCell=newRow.insertCell();
                 var releasedCell=newRow.insertCell();
 
+                if (userRole=='instructor'){
+                    var reviewButtonClone2=examReviewButton.cloneNode(true);
+                    reviewButtonClone2.setAttribute("name",attrName);
+                    nameCell.appendChild(reviewButtonClone2);
 
-
-                if (attrVal.grade=="-1" && userRole!='instructor'){
-                    var buttonClone=examTakeButton.cloneNode(true);
-                    //  buttonClone.removeAttribute("style");
-                    buttonClone.setAttribute("name",attrName);
-                    nameCell.appendChild(buttonClone);
-
-                    gradesCell.innerHTML="Not yet taken";
-                }
-                else{
-                    var reviewButtonClone=examReviewButton.cloneNode(true);
-                    reviewButtonClone.setAttribute("name",attrName);
-                    nameCell.appendChild(reviewButtonClone);
-
-                    if (userRole=='instructor' && attrVal.grade=="-1"){
+                    if (attrVal.grade=="-1"){
                         gradesCell.innerHTML="Not yet taken";
                     }
                     else{
                         gradesCell.innerHTML=attrVal.grade;
                     }
-                }
 
-                nameCell.innerHTML+=("  "+ attrVal.named);
-                if (attrVal.released=="nr"){
-
-                    if(userRole=='instructor'){
+                    if (attrVal.released=="nr"){
                         var releaseClone=examReleasebutton.cloneNode(true);
                         releaseClone.setAttribute("name",attrName);
                         releasedCell.appendChild(releaseClone);
                         releasedCell.innerHTML+=" No";
                     }
                     else{
-                        releasedCell.innerHTML="No";
+                        releasedCell.innerHTML="Yes";
                     }
                 }
-                else{
-                    releasedCell.innerHTML="Yes";
+
+                if (userRole=='student'){
+                    if (attrVal.grade=="-1"){
+                        var buttonClone=examTakeButton.cloneNode(true);
+                        //  buttonClone.removeAttribute("style");
+                        buttonClone.setAttribute("name",attrName);
+                        nameCell.appendChild(buttonClone);
+
+                        gradesCell.innerHTML="Not yet taken";
+                    }
+                    else{
+                        var reviewButtonClone=examReviewButton.cloneNode(true);
+                        reviewButtonClone.setAttribute("name",attrName);
+                        nameCell.appendChild(reviewButtonClone);
+                        gradesCell.innerHTML=attrVal.grade;
+                    }
+
+                    if (attrVal.released=="nr"){
+                        releasedCell.innerHTML="No";
+                        gradesCell.innerHTML="Not yet released";
+                    }
+                    else{
+                        releasedCell.innerHTML="Yes";
+                    }
                 }
+                nameCell.innerHTML+=("  "+ attrVal.named);
             }
         }
     });
@@ -739,7 +756,9 @@ function getExam(fetchThis){
 
                         outerBoarder.appendChild(tfCloned);
                         break;
+
                     case 'fill':
+                    case 'code':
                         var fillDummy = document.getElementById("fillDummy");
                         var fillCloned = fillDummy.cloneNode(true);
                         // codeCloned.removeAttribute("style");
@@ -752,21 +771,6 @@ function getExam(fetchThis){
                         fillQuestion[0].innerHTML=attrVal.question;
 
                         outerBoarder.appendChild(fillCloned);
-                        break;
-
-                    case 'code':
-                        var codeDummy = document.getElementById("codeDummy");
-                        var codeCloned = codeDummy.cloneNode(true);
-                        // codeCloned.removeAttribute("style");
-                        codeCloned.setAttribute("id", key);
-                        var codeTextArea;
-                        codeTextArea = codeCloned.getElementsByTagName("p");
-                        codeTextArea[0].setAttribute("name", key);
-
-                        var codeQuestion= codeCloned.getElementsByTagName("h3");
-                        codeQuestion[0].innerHTML=attrVal.question;
-
-                        outerBoarder.appendChild(codeCloned);
                         break;
                 }
             }
@@ -804,27 +808,17 @@ function postExam(){
     for (var x=0; x<fillAreas.length; x++){
         var fillArea=fillAreas[x];
         var fillAreaName=fillArea.getAttribute("name");
-        if (fillAreaName!="codeDummy" && fillAreaName!="codeVar1Dummy" && fillAreaName!="codeVar2Dummy"){
-            if(fillArea.dataset.fill=="fill") {
+        if (fillAreaName!="fillDummy"){
                 answers[fillAreaName] = fillAreas[x].innerHTML;
-            }
-            else if(fillArea.dataset.var1="var1"){
-                answers[fillAreaName] ={};
-                answers[fillAreaName]['var1']= fillArea.innerHTML;
-            }
-            else if(fillArea.dataset.var2="var2"){
-                answers[fillAreaName]['var2']= fillArea.innerHTML;
-            }
         }
     }
-    console.log(answers);
-    /*
+
     sendOver('answered',answers,function(resp){
         if (resp.status==1){
             createIndex();
             alertz('success',"exam successfully submitted","yes");
         }
-    });*/
+    });
 }
 
 function alertz(level,message,onPage){
@@ -880,6 +874,7 @@ function createIndex(){
     pageClear();
     dummyAdder("createIndexDummy");
     dummyAdder("examsButtonDummy");
+    checkedQuestions={};
     if (!userLoggedIn ||!userRole) {
         userInfo();
     }
@@ -976,8 +971,12 @@ function reviewExam(fetchThis){
                 if (attrName!="eid") {
                     var bankQuestionClone = bankQuestion.cloneNode(true);
                     var bankCheckbox = bankQuestionClone.getElementsByTagName("input");
+                    var weightField = bankCheckbox[1];
                     bankCheckbox = bankCheckbox[0];
-                    bankCheckbox.name = key;
+                    bankCheckbox.parentNode.removeChild(bankCheckbox);
+                    weightField.value=attrVal.weight;
+                    weightField.type="text";
+                    weightField.disabled="disabled";
                     var bankLines = bankQuestionClone.getElementsByTagName("li");
 
                     var bankAnchor = bankQuestionClone.getElementsByTagName("a");
@@ -996,8 +995,11 @@ function reviewExam(fetchThis){
                             }
                             else{
                                 bankLines[0].className += " list-group-item-danger";
-                                bankLines[4].innerHTML=attrVal.feedback;
+                                bankLines[4].innerHTML="<strong> Feedback: </strong> <br>"+ attrVal.feedback;
                                 bankLines[4].removeAttribute("style");
+                                bankLines[4].className += " list-group-item-info";
+
+
                             }
                             bankLines[1].innerHTML = attrVal.choice1;
                             bankLines[2].innerHTML = attrVal.choice2;
@@ -1014,18 +1016,18 @@ function reviewExam(fetchThis){
                             }
                             else if ((attrVal.answered ==="true") && (attrVal.answer==="false")){
                                 bankLines[0].className += " list-group-item-danger";
-                                bankLines[2].innerHTML=attrVal.feedback;
+                                bankLines[2].innerHTML="<strong> Feedback: </strong> <br>"+ attrVal.feedback;
                                 bankLines[2].removeAttribute("style");
                             }
                             else{
                                 bankLines[1].className += " list-group-item-danger";
-                                bankLines[2].innerHTML=attrVal.feedback;
+                                bankLines[2].innerHTML="<strong> Feedback: </strong> <br>"+ attrVal.feedback;
                                 bankLines[2].removeAttribute("style");
                             }
                             break;
                         case 'fill':
                             if(attrVal.answered != attrVal.answer){
-                                bankLines[0].className+="list-group-item-danger";
+                                bankLines[0].className+=" list-group-item-danger";
                             }
                             else{
                                 bankLines[0].className += " list-group-item-success";
@@ -1036,16 +1038,26 @@ function reviewExam(fetchThis){
                             bankLines[1].innerHTML = attrVal.answer;
                             break;
                         case 'code':
-                            if(attrVal.answered != attrVal.answer){
-                                bankLines[0].className+="list-group-item-danger";
+
+                            bankLines[0].innerHTML = "<strong> var 1:</strong> <br>"+ attrVal.choice1;
+                            bankLines[1].innerHTML = "<strong> var 2:</strong> <br>"+ attrVal.choice2;
+                            bankLines[2].innerHTML = "<strong> Expected Output:</strong> <br>"+ attrVal.answer;
+                            bankLines[3].innerHTML = "<strong> Your Output:</strong> <br>"+ attrVal.stdout;
+                            bankLines[4].innerHTML = "<strong> Errors:</strong> <br>"+ attrVal.stderr;
+                            bankLines[5].innerHTML = "<strong> Your Code:</strong> <br>"+ attrVal.answered;
+
+                            bankLines[4].removeAttribute("style");
+                            bankLines[5].removeAttribute("style");
+                            if(attrVal.correct=="yes"){
+                                bankLines[3].className += " list-group-item-success";
                             }
                             else{
-                                bankLines[0].className += " list-group-item-success";
+                                bankLines[3].className+=" list-group-item-danger";
+                                bankLines[6].removeAttribute("style");
+                                bankLines[6].innerHTML = "<strong> Feedback: </strong> <br>"+ attrVal.feedback;
+                                bankLines[6].className+=" list-group-item-info";
+
                             }
-                            bankLines[0].innerHTML = attrVal.answered;
-                            bankLines[1].parentNode.removeChild(bankLines[1]);
-                            bankLines[1].parentNode.removeChild(bankLines[1]);
-                            bankLines[1].innerHTML = attrVal.answer;
                             break;
                     }
                     bankHolder.appendChild(bankQuestionClone);
