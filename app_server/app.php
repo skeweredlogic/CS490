@@ -21,7 +21,7 @@ require 'UserInfo.php';
 session_start();
 $data = json_decode(file_get_contents('php://input'),true);
 $fun;
-$backend = "http://osl81.njit.edu/~rdl4/app.php";
+$backend = "http://osl82.njit.edu/~rdl4/app.php";
 
 if (!isset($data['cmd'])) {
 	http_response_code(501);
@@ -48,7 +48,7 @@ switch ($data['cmd']) {
 		break;
 	case "bank":
 		$fun = new GetBank;
-		$fun->post($backend);
+		$fun->post($data,$backend);
 		break;
 	case "createExam":
 		$fun = new CreateExam;

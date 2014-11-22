@@ -1,7 +1,7 @@
 <?php
 class ListExams {
 	public function post($url) {
-		if(isset($_SESSION['uid']) && $_SESSION['login'] === true) {
+		if(isset($_SESSION['uid']) && $_SESSION['login'] === 1) {
 
 			$data['role'] = $_SESSION['type'];
 			$data['uid'] = $_SESSION['uid'];

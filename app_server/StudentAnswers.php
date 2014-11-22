@@ -2,8 +2,48 @@
 class StudentAnswers {
 	
 	public function post($data, $url) {
-		if(isset($_SESSION['uid']) && $_SESSION['login'] === true && $_SESSION['type'] === 'student') {
+		if(isset($_SESSION['uid']) && $_SESSION['login'] === 1 && $_SESSION['type'] === 'student') {
 			$data['data']['uid'] = $_SESSION['uid'];
+
+			$gradeIt = $data['data'];
+			$gradeIt['cmd'] = "bank";
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array("cmd" => "bank")));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+			$bank = json_decode(curl_exec($ch),true);
+			curl_close($ch);
+			if ($bank['status'] === -1) {
+				die(json_encode(array(
+					"status" => -1)));
+			}
+
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array("cmd" => "eid_qid")));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+			$eid_qid = json_decode(curl_exec($ch),true);
+			$return_code = (string)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+			unset($bank['status']);
+			unset($gradeIt['cmd']);
+			$eid = $gradeIt['eid'];
+			unset($gradeIt['eid']);
+			$uid = $gradeIt['uid'];
+			unset($gradeIt['uid']);
+			$grade = 0;
+			$qcount = 0;
+			foreach ($gradeIt as $key => $value) {
+				if ($bank[$key][$key]['answer'] === $value) {
+					$grade = $grade + $eid_qid[$eid][$key];
+				}
+				$qcount = $qcount + $eid_qid[$eid][$key];
+			}
+			$finalgrade = (float)$grade/(float)$qcount;
+			$finalgrade = $finalgrade*100;
+
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
@@ -23,36 +63,7 @@ class StudentAnswers {
 					"status" => -1,
 					"message" => "server error")));
 			}
-
-			$gradeIt = $data['data'];
-			$gradeIt['cmd'] = "bank";
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, $url);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($gradeIt));
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-			$bank = json_decode(curl_exec($ch),true);
-			curl_close($ch);
-			if ($bank['status'] === -1) {
-				die(json_encode(array(
-					"status" => -1)));
-			}
-			unset($bank['status']);
-			unset($gradeIt['cmd']);
-			$eid = $gradeIt['eid'];
-			unset($gradeIt['eid']);
-			$uid = $gradeIt['uid'];
-			unset($gradeIt['uid']);
-			$grade = 0;
-			$qcount = 0;
-			foreach ($gradeIt as $key => $value) {
-				if ($bank[$key][$key]['answer'] === $value) {
-					$grade++;
-				}
-				$qcount++;
-			}
-			$finalgrade = (float)$grade/(float)$qcount;
-			$finalgrade = $finalgrade*100;
+			
 			$send = json_encode(array(
 				"uid" => $uid,
 				"eid" => $eid,
@@ -70,7 +81,7 @@ class StudentAnswers {
 
 		}
 
-		elseif(isset($_SESSION['uid']) && $_SESSION['login'] === true && $_SESSION['type'] === 'instructor') {
+		elseif(isset($_SESSION['uid']) && $_SESSION['login'] === 1 && $_SESSION['type'] === 'instructor') {
 			http_response_code(403);
 			die(json_encode(array(
 				"status" => -1)));

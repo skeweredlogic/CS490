@@ -2,7 +2,7 @@
 class UserInfo {
 	
 	public function post() {
-		if(isset($_SESSION['uid']) && $_SESSION['login'] === true) {
+		if(isset($_SESSION['uid']) && $_SESSION['login'] === 1) {
 			die(json_encode(array(
 				"user" => $_SESSION['uid'],
 				"role" => $_SESSION['type'],

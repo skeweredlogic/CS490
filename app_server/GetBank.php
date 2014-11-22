@@ -1,12 +1,21 @@
 <?php
 class GetBank {
 	
-	public function post($url) {
-		if (isset($_SESSION['uid']) && $_SESSION['login'] === true && $_SESSION['type'] === "instructor") {
+	public function post($data,$url) {
+		if (isset($_SESSION['uid']) && $_SESSION['login'] === 1 && $_SESSION['type'] === "instructor") {
 
+			if(isset($data['data']['num'])) {
+				if(isset($data['data']['low'])) {
+					$data['data']['offset'] = $data['data']['low'];
+					unset($data['data']['low']);
+				}
+				else {
+					$data['data']['offset'] = 0;
+				}
+			}
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array("cmd" => "bank")));
+			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
 			$result = json_decode(curl_exec($ch),true);
@@ -32,7 +41,7 @@ class GetBank {
 					"message" => "failed to retrieve question bank")));
 			}
 		}
-		elseif(isset($_SESSION['uid']) && $_SESSION['login'] === true && $_SESSION['type'] === "student") {
+		elseif(isset($_SESSION['uid']) && $_SESSION['login'] === 1 && $_SESSION['type'] === "student") {
 			http_response_code(403);
 			die(json_encode(array(
 				"status" => -1)));
