@@ -6,7 +6,6 @@ class StudentAnswers {
 			$data['data']['uid'] = $_SESSION['uid'];
 
 			$gradeIt = $data['data'];
-			$gradeIt['cmd'] = "bank";
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array("cmd" => "bank")));
@@ -36,7 +35,55 @@ class StudentAnswers {
 			$grade = 0;
 			$qcount = 0;
 			foreach ($gradeIt as $key => $value) {
-				if ($bank[$key][$key]['answer'] === $value) {
+				if ($bank[$key][$key]['type'] === "code") {
+					$prefix = "./codeqs/".$uid."_".$eid."_".$key."_";
+					$newfile = $prefix."code.py";
+					$outfile = $prefix."out.txt";
+					$errfile = $prefix."err.txt";
+					$var1 = $bank[$key][$key]['choice1'];
+					$var2 = $bank[$key][$key]['choice2'];
+					preg_match('/def (.*)?\((.*)?\):/',$value,$fname);
+					$fname = $fname[1];
+					file_put_contents($newfile,"import sys\n".$value."\n".$fname."(".$var1.",".$var2.")");
+					$proc = proc_open("python ".$newfile,array(
+						1 => array('pipe','w'),
+						2 => array('pipe','w'),
+					),$pipes);
+					$stdout = stream_get_contents($pipes[1]);
+					file_put_contents($outfile,$stdout);
+					fclose($pipes[1]);
+					$stderr = stream_get_contents($pipes[2]);
+
+					file_put_contents($errfile,$stderr);
+					fclose($pipes[2]);
+
+					$lines = file($newfile); 
+					$last = sizeof($lines) - 1 ; 
+					unset($lines[$last]); 
+
+					$fp = fopen($newfile, 'w'); 
+					fwrite($fp, implode('', $lines)); 
+					fclose($fp);
+
+					$data['data'][$key] = $stdout;
+
+					if ($stderr != "\n" || $stderr != "") {}
+					else {
+						$stdout = str_replace(array("\n"," ","\t","\r"),"",$stdout);
+						$correct = str_replace(array("\n"," ","\t","\r"),"",$bank[$key][$key]['answer']);
+						if (strcasecmp($stdout,$correct) == 0) {
+							$grade = $grade + $eid_qid[$eid][$key];
+						}
+					}
+				}
+				elseif ($bank[$key][$key]['type'] === "fill") {
+					$correct = str_replace(array("\n"," ","\t"),"",$bank[$key][$key]['answer']);
+					$answered = str_replace(array("\n"," ","\t"),"",$value);
+					if (strcasecmp($correct,$answered) == 0) {
+						$grade = $grade + $eid_qid[$eid][$key];
+					}
+				}
+				elseif ($bank[$key][$key]['answer'] === $value) {
 					$grade = $grade + $eid_qid[$eid][$key];
 				}
 				$qcount = $qcount + $eid_qid[$eid][$key];
@@ -63,7 +110,7 @@ class StudentAnswers {
 					"status" => -1,
 					"message" => "server error")));
 			}
-			
+
 			$send = json_encode(array(
 				"uid" => $uid,
 				"eid" => $eid,
