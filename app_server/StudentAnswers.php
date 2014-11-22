@@ -42,10 +42,12 @@ class StudentAnswers {
 					$errfile = $prefix."err.txt";
 					$var1 = $bank[$key][$key]['choice1'];
 					$var2 = $bank[$key][$key]['choice2'];
+					$code = str_replace("<div>","\n",$value);
+					$code = str_replace(array("&nbsp;","</div>"),"",$code);
 					preg_match('/def (.*)?\((.*)?\):/',$value,$fname);
 					$fname = $fname[1];
-					file_put_contents($newfile,"import sys\n".$value."\n".$fname."(".$var1.",".$var2.")");
-					$proc = proc_open("python ".$newfile,array(
+					file_put_contents($newfile,"import sys\n".$code."\n".$fname."(".$var1.",".$var2.")");
+					$proc = proc_open("/usr/local/bin/python3.2.1 ".$newfile,array(
 						1 => array('pipe','w'),
 						2 => array('pipe','w'),
 					),$pipes);

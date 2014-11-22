@@ -60,12 +60,6 @@ class GetExam {
 			$answers = json_decode(curl_exec($ch),true);
 			$return_code = (string)curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-			curl_close($ch);
-			if (isset($grades['status'])) {
-				die(json_encode(array(
-					"status" => -1)));
-			}
-
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array("cmd" => "eid_qid")));
@@ -73,12 +67,6 @@ class GetExam {
 
 			$eid_qid = json_decode(curl_exec($ch),true);
 			$return_code = (string)curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-			curl_close($ch);
-			if (isset($grades['status'])) {
-				die(json_encode(array(
-					"status" => -1)));
-			}
 
 			$return = array();
 			$return[0] = array("eid" => $data['data']);
@@ -90,6 +78,17 @@ class GetExam {
 					$return[$i] = $bank[$key];
 					$return[$i][$key]['answered'] = $answers[$_SESSION['uid']][$data['eid']][$key];
 					$return[$i][$key]['weight'] = $eid_qid[$eid][$key];
+					if ($bank[$key][$key]['type'] === "code") {
+						$prefix = "./codeqs/".$data['uid']."_".$return[0]['eid']."_".$key."_";
+						$code = file_get_contents($prefix."code.py");
+						$code = str_replace("\n","<br>",$code);
+						$code = str_replace(" ","&nbsp; ",$code);
+						$stdout = file_get_contents($prefix."out.txt");
+						$stderr = file_get_contents($prefix."err.txt");
+						$return[$i][$key]['answered'] = $code;
+						$return[$i][$key]['stdout'] = $stdout;
+						$return[$i][$key]['stderr'] = $stderr;
+					}
 					$i++;
 				}
 				if(isset($grades[$data['uid']])) {
