@@ -44,10 +44,26 @@ class StudentAnswers {
 					$var2 = $bank[$key][$key]['choice2'];
 					$code = str_replace("<div>","\n",$value);
 					$code = str_replace(array("&nbsp;","</div>"),"",$code);
-					preg_match('/def (.*)?\((.*)?\):/',$value,$fname);
-					$fname = $fname[1];
-					file_put_contents($newfile,"import sys\n".$code."\n".$fname."(".$var1.",".$var2.")");
-					$proc = proc_open("/usr/local/bin/python3.2.1 ".$newfile,array(
+					preg_match('/(.*)?def (.*)?\((.*)?\):/',$value,$fname);
+					$fname = $fname[2];
+					$codestring = "import sys\n".$code."\n".$fname."(";
+					if($var1 === "" && $var2 === "") {
+						$codestring = $codestring.")";
+					}
+					elseif($var1 === "") {
+						$codestring = $codestring.$var2.")";
+					}
+					elseif($var2 === "") {
+						$codestring = $codestring.$var1.")";
+					}
+					else {
+						$codestring = $codestring.$var1.",".$var2.")";
+					}
+					file_put_contents($newfile,$codestring);
+					/*$cmd = "/usr/local/bin/python3.2.1 ".$newfile." > ".$outfile." 2> ".$errfile;
+					exec($cmd);*/
+					$cmd = "/usr/local/bin/python3.2.1 ".$newfile;
+					$proc = proc_open($cmd,array(
 						1 => array('pipe','w'),
 						2 => array('pipe','w'),
 					),$pipes);
@@ -55,17 +71,18 @@ class StudentAnswers {
 					file_put_contents($outfile,$stdout);
 					fclose($pipes[1]);
 					$stderr = stream_get_contents($pipes[2]);
-
 					file_put_contents($errfile,$stderr);
 					fclose($pipes[2]);
+					//$stdout = file_get_contents($outfile);
+					//$stderr = file_get_contents($errfile);
 
-					$lines = file($newfile); 
+					/*$lines = file($newfile); 
 					$last = sizeof($lines) - 1 ; 
 					unset($lines[$last]); 
 
 					$fp = fopen($newfile, 'w'); 
 					fwrite($fp, implode('', $lines)); 
-					fclose($fp);
+					fclose($fp);*/
 
 					$data['data'][$key] = $stdout;
 

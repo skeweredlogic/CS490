@@ -88,6 +88,11 @@ class GetExam {
 						$return[$i][$key]['answered'] = $code;
 						$return[$i][$key]['stdout'] = $stdout;
 						$return[$i][$key]['stderr'] = $stderr;
+						$stdout = str_replace(array("\n"," ","\t","\r"),"",$stdout);
+						$correct = str_replace(array("\n"," ","\t","\r"),"",$return[$i][$key]['answer']);
+						if (strcasecmp($stdout,$correct) == 0) {
+							$return[$i][$key]['correct'] = "yes";
+						}
 					}
 					$i++;
 				}
@@ -101,6 +106,12 @@ class GetExam {
 					$return[$i] = $bank[$key];
 					$return[$i][$key]['answered'] = $return[$i][$key]['answer'];
 					$return[$i][$key]['weight'] = $eid_qid[$eid][$key];
+					if ($bank[$key][$key]['type'] === "code") {
+						$return[$i][$key]['stdout'] = $return[$i][$key]['answer'];
+						$return[$i][$key]['stderr'] = "";
+						$return[$i][$key]['answered'] = "";
+						$return[$i][$key]['correct'] = "yes";
+					}
 					$i++;
 				}
 			}

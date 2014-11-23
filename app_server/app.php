@@ -17,6 +17,7 @@ require 'ListExams.php';
 require 'GetExam.php';
 require 'StudentAnswers.php';
 require 'UserInfo.php';
+require 'ReleaseExam.php';
 
 session_start();
 $data = json_decode(file_get_contents('php://input'),true);
@@ -70,6 +71,9 @@ switch ($data['cmd']) {
 		$fun = new UserInfo;
 		$fun->post();
 		break;
+	case "release":
+		$fun = new ReleaseExam;
+		$fun->post($data,$backend);
 }
 
 http_response_code(501);
