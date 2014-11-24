@@ -19,6 +19,11 @@ class ListExams {
 			$success = $result['status'] === 1 && $return_code === "200";
 			if ($success) {
 				unset($result['status']);
+				foreach ($result as $key => $value) {
+					if ($result[$key][$key]['grade'] === false) {
+						$result[$key][$key]['grade'] = -1;
+					}
+				}
 				die(json_encode($result));
 			}
 			elseif ($return_code === "500") {

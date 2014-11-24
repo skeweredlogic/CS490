@@ -1,4 +1,5 @@
 <?php
+
 class StudentAnswers {
 	
 	public function post($data, $url) {
@@ -25,6 +26,7 @@ class StudentAnswers {
 
 			$eid_qid = json_decode(curl_exec($ch),true);
 			$return_code = (string)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			curl_close($ch);
 
 			unset($bank['status']);
 			unset($gradeIt['cmd']);
@@ -60,9 +62,16 @@ class StudentAnswers {
 						$codestring = $codestring.$var1.",".$var2.")";
 					}
 					file_put_contents($newfile,$codestring);
-					/*$cmd = "/usr/local/bin/python3.2.1 ".$newfile." > ".$outfile." 2> ".$errfile;
-					exec($cmd);*/
-					$cmd = "/usr/local/bin/python3.2.1 ".$newfile;
+					chmod($newfile,0777);
+					$cmd = "/usr/local/bin/python3.4.0a1 ".$newfile." > ".$outfile." 2> ".$errfile;
+					$ch = curl_init();
+					curl_setopt($ch, CURLOPT_URL, "http://osl83.njit.edu/~rj252/app_server/MyExec.php");
+					curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array("cmd" => $cmd)));
+					curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+					curl_exec($ch);
+					curl_close($ch);
+					//exec($cmd);
+					/*$cmd = "/usr/local/bin/python3.4.0a1 ".$newfile;
 					$proc = proc_open($cmd,array(
 						1 => array('pipe','w'),
 						2 => array('pipe','w'),
@@ -72,21 +81,14 @@ class StudentAnswers {
 					fclose($pipes[1]);
 					$stderr = stream_get_contents($pipes[2]);
 					file_put_contents($errfile,$stderr);
-					fclose($pipes[2]);
-					//$stdout = file_get_contents($outfile);
-					//$stderr = file_get_contents($errfile);
-
-					/*$lines = file($newfile); 
-					$last = sizeof($lines) - 1 ; 
-					unset($lines[$last]); 
-
-					$fp = fopen($newfile, 'w'); 
-					fwrite($fp, implode('', $lines)); 
-					fclose($fp);*/
+					fclose($pipes[2]);*/
+					// unfortunately this doesn't work on afs
+					$stdout = file_get_contents($outfile);
+					$stderr = file_get_contents($errfile);
 
 					$data['data'][$key] = $stdout;
 
-					if ($stderr != "\n" || $stderr != "") {}
+					if ($stderr != "") {}
 					else {
 						$stdout = str_replace(array("\n"," ","\t","\r"),"",$stdout);
 						$correct = str_replace(array("\n"," ","\t","\r"),"",$bank[$key][$key]['answer']);
