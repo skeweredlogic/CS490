@@ -18,7 +18,7 @@ class ListExams {
 				$studentGrades = array();
 				$return[$curreid] = array($curreid => array(
 					"named" => $currexam['name'],
-					"released" => "nr",
+					"released" => $currexam['released'],
 					"grade" => $grade));
 				$accum = 0;
 				while ($currgrade = mysqli_fetch_array($grades)) {
@@ -26,7 +26,7 @@ class ListExams {
 					$grade = $grade + $currgrade['grade'];
 					$accum++;
 				}
-				$return[$curreid][$curreid]['grade'] = $grade ? (float)$grade/$accum : -1;
+				$return[$curreid][$curreid]['grade'] = ($grade >= 0) ? (float)$grade/$accum : -1;
 				$return[$curreid][$curreid]['grades'] = $studentGrades;
 			}
 			$return['status'] = 1;
@@ -48,7 +48,7 @@ class ListExams {
 				$grade = -1;
 				$return[$curreid] = array($curreid => array(
 					"named" => $currexam['name'],
-					"released" => "nr",
+					"released" => $currexam['released'],
 					"grade" => -1));
 
 				while ($currgrade = mysqli_fetch_array($grades)) {
