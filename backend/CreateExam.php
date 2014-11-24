@@ -6,15 +6,16 @@ class CreateExam {
 		$eid = mysqli_fetch_array($eid);
 		$neweid = $eid[0];
 		$name = mysqli_real_escape_string($conn,$data['name']);
-		$result = mysqli_query($conn, "INSERT INTO exams VALUES ('$neweid','$name');");
+		$result = mysqli_query($conn, "INSERT INTO exams(eid, name) VALUES('$neweid','$name');");
 		if (!$result) {
 			die(json_encode(array(
 				"status" => -1,
 				"message" => mysqli_error($conn))));
 		}
 		unset($data['name']);
+        $weight = $data['qid'];
 		foreach($data as $key => $value) {
-			$result = mysqli_query($conn, "INSERT INTO eid_qid VALUES ('$neweid','$key');");
+			$result = mysqli_query($conn, "INSERT INTO eid_qid VALUES('$neweid','$key', '$value');");
 			if (!$result) {
 				die(json_encode(array(
 					"status" => -1,
@@ -25,6 +26,5 @@ class CreateExam {
 			"status" => 1,
 			"message" => "Exam successfully created")));
 	}
-
 }
 ?>

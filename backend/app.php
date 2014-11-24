@@ -17,6 +17,9 @@ require 'GetExam.php';
 require 'GetGrades.php';
 require 'SetStudentAnswers.php';
 require 'SetStudentGrade.php';
+require 'GetStudentAnswer.php';
+require 'ReleaseExams.php';
+require 'eid_qid.php';
 
 $data = json_decode(file_get_contents('php://input'),true);
 $fun;
@@ -27,7 +30,7 @@ if (!isset($data['cmd'])) {
 		"message" => "command field not set")));
 }
 
-$conn=mysqli_connect("sql2.njit.edu","rj252","passwordhere","rj252");
+$conn=mysqli_connect("sql2.njit.edu","rdl4","password","rdl4");
 if (mysqli_connect_errno()) {
 	http_response_code(500);
 	die(json_encode(array(
@@ -50,7 +53,7 @@ switch ($data['cmd']) {
 		break;
 	case "bank":
 		$fun = new GetBank;
-		$fun->post($conn);
+		$fun->post($conn, $data['data']);
 		break;
 	case "createExam":
 		$fun = new CreateExam;
@@ -76,6 +79,18 @@ switch ($data['cmd']) {
 		$fun = new SetStudentGrade;
 		$fun->post($data,$conn);
 		break;
+	case "getStudentAnswer":
+		$fun = new GetStudentAnswer;
+		$fun->post($conn);
+		break;
+    case "release":
+		$fun = new ReleaseExams;
+		$fun->post($conn, $data['data']);
+		break;
+    case "eid_qid":
+        $fun = new eid_qid;
+        $fun->post($conn);
+        break;
 }
 
 http_response_code(501);
