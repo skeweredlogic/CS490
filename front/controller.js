@@ -14,146 +14,6 @@ window.onload= function() {
     // testAddAllButtons();
 };
 
-var junkBank = [
-    {"eid":"restinpepperonis"},
-    {"3434":
-    {
-        "type": "multi",
-        "question": "jpifsjdfpi?",
-        "answer": "fsdfasdfs",
-        'feedback': 'asfdasd',
-        'choice1': 'gdfgdf',
-        'choice2': 'gdfgd6756f',
-        'choice3': 'g4534dfgdf'
-    }
-
-    },
-    {'gg45':
-    {
-        'type': 'tf',
-        'question': 'moeb8pi?',
-        'answer': 'true',
-        'feedback': 'asfdasd',
-        'choice1': 'gdfgdf',
-        'choice2': 'gdfgd6756f',
-        'choice3': 'g4534dfgdf'
-    }
-
-    },
-    {'r4r4':
-    {
-        'type': 'code',
-        'question': 'pokp23kpi?',
-        'answer': 'fsdfasdfs',
-        'feedback': 'asfdasd',
-        'choice1': 'gdfgdf',
-        'choice2': 'gdfgd6756f',
-        'choice3': 'g4534dfgdf'
-    }
-
-    }
-];
-
-var junkExamReview = [
-    {"eid":"restinpepperonis"},
-    {"3434":
-    {
-        "type": "multi",
-        "question": "jpifsjdfpi?",
-        "answer": "fsdfasdfs",
-        'feedback': 'asfdasd',
-        'choice1': 'gdfgdf',
-        'choice2': 'gdfgd6756f',
-        'choice3': 'g4534dfgdf',
-        'answered': 'g4534dfgdf'
-    }
-
-    },
-    {'gg45':
-    {
-        'type': 'tf',
-        'question': 'moeb8pi?',
-        'answer': 'true',
-        'feedback': 'asfdasd',
-        'choice1': 'gdfgdf',
-        'choice2': 'gdfgd6756f',
-        'choice3': 'g4534dfgdf',
-        'answered': 'true'
-    }
-
-    },
-    {'r4r4': {
-        'type': 'code',
-        'question': 'pokp23kpi?',
-        'answer': 'fsdfasdfs',
-        'feedback': 'asfdasd',
-        'choice1': 'gdfgdf',
-        'choice2': 'gdfgd6756f',
-        'choice3': 'g4534dfgdf',
-        'answered': 'g4534dfgdf'
-    }
-    },
-    {'454rte':
-    {
-        'type': 'multi',
-        'question': 'pokp23kpi?',
-        'answer': 'fsdfasdfs',
-        'feedback': 'finally done!',
-        'choice1': 'gdfgdf',
-        'choice2': 'gdfgd6756f',
-        'choice3': 'g4534dfgdf',
-        'answered': 'fsdfasdfs'
-    }
-    }
-];
-/*junkBank =JSON.stringify(junkBank);
- console.log(junkBank);
- junkBank =JSON.parse(junkBank);
- console.log(junkBank);*/
-
-var junkExams =[
-    {'545':
-    {
-        'named':'exam1',
-        'released':'nr',
-        'grade': '85'
-
-    }
-    },
-    {'123':
-    {
-        'named':'exam2',
-        'released':'nr',
-        'grade': '44'
-
-    }
-    },
-    {'783':
-    {
-        'named':'exam3',
-        'released':'nr',
-        'grade': '85'
-
-    }
-    },
-    {'234':
-    {
-        'named':'exam4',
-        'released':'nr',
-        'grade': '-1'
-
-    }
-    }
-];
-
-/*
- junkExams=JSON.stringify(junkExams);
- console.log(junkExams);
- junkExams =JSON.parse(junkExams);
- console.log(junkExams);
- */
-
-
 function sendOver(command,data,callback){
 
     var sPackage;
@@ -562,7 +422,7 @@ function createExam(){
      }*/
     /*
      sendOver('createExam',questions,function(resp){
-     if (resp.staus==1){
+     if (resp.status==1){
      pageClear();
      createIndex();
      alertz("success","exam creation success","yes");
@@ -582,15 +442,15 @@ function createExam(){
         alertz('warning',"Please select at least one question","yes");
         return;
     }
-    console.log(checkedQuestions);
-    /*sendOver('createExam',checkedQuestions,function(resp){
-     if (resp.staus==1){
+    //console.log(checkedQuestions);
+    sendOver('createExam',checkedQuestions,function(resp){
+     if (resp.status==1){
      pageClear();
      createIndex();
      checkedQuestions={};
      alertz("success","exam creation success","yes");
      }
-     });*/
+     });
 }
 
 function currentExams(){
@@ -648,26 +508,25 @@ function currentExams(){
 
                 if (userRole=='student'){
                     if (attrVal.grade=="-1"){
-                        var buttonClone=examTakeButton.cloneNode(true);
-                        //  buttonClone.removeAttribute("style");
-                        buttonClone.setAttribute("name",attrName);
-                        nameCell.appendChild(buttonClone);
-
+                        if(attrVal.released=="nr") {
+                            var buttonClone = examTakeButton.cloneNode(true);
+                            //  buttonClone.removeAttribute("style");
+                            buttonClone.setAttribute("name", attrName);
+                            nameCell.appendChild(buttonClone);
+                        }
                         gradesCell.innerHTML="Not yet taken";
+                    }
+                    else if (attrVal.released=="nr"){
+                        releasedCell.innerHTML="No";
+                        gradesCell.innerHTML="Not yet released";
                     }
                     else{
                         var reviewButtonClone=examReviewButton.cloneNode(true);
                         reviewButtonClone.setAttribute("name",attrName);
                         nameCell.appendChild(reviewButtonClone);
                         gradesCell.innerHTML=attrVal.grade;
-                    }
-
-                    if (attrVal.released=="nr"){
-                        releasedCell.innerHTML="No";
-                        gradesCell.innerHTML="Not yet released";
-                    }
-                    else{
                         releasedCell.innerHTML="Yes";
+
                     }
                 }
                 nameCell.innerHTML+=("  "+ attrVal.named);
@@ -989,21 +848,44 @@ function reviewExam(fetchThis){
 
                     switch (attrVal.type) {
                         case 'multi':
-                            bankLines[0].innerHTML = attrVal.answered;
-                            if (attrVal.answer==attrVal.answered){
-                                bankLines[0].className += " list-group-item-success";
-                            }
-                            else{
-                                bankLines[0].className += " list-group-item-danger";
+
+
+                            bankLines[0].innerHTML = attrVal.answer;
+                            bankLines[1].innerHTML = attrVal.choice1;
+                            bankLines[2].innerHTML = attrVal.choice2;
+                            bankLines[3].innerHTML = attrVal.choice3;
+
+
+
+                                var x;
+                               switch(attrVal.answered){
+                                   case attrVal.answer:
+                                       x=0;
+                                       break;
+                                   case attrVal.choice1:
+                                       x=1;
+                                       break;
+                                   case attrVal.choice2:
+                                       x=2;
+                                       break;
+                                   case attrVal.choice3:
+                                       x=3;
+                                       break;
+                                   case "":
+
+                                       break;
+                               }
+                                if (x=="0"){
+                                    bankLines[0].className += " list-group-item-success";
+                                }
+                                else if(x!=""){
+                                    bankLines[x].className += " list-group-item-danger";
+                                }
                                 bankLines[4].innerHTML="<strong> Feedback: </strong> <br>"+ attrVal.feedback;
                                 bankLines[4].removeAttribute("style");
                                 bankLines[4].className += " list-group-item-info";
 
 
-                            }
-                            bankLines[1].innerHTML = attrVal.choice1;
-                            bankLines[2].innerHTML = attrVal.choice2;
-                            bankLines[3].innerHTML = attrVal.choice3;
                             break;
                         case 'tf':
                             bankLines[2].parentNode.removeChild(bankLines[2]);
