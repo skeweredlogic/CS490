@@ -2,7 +2,7 @@
 class CreateExam {
 	
 	public function post($data, $url) {
-		if(isset($_SESSION['uid']) && $_SESSION['login'] === true && $_SESSION['type'] === 'instructor') {
+		if(isset($_SESSION['uid']) && $_SESSION['login'] === 1 && $_SESSION['type'] === 'instructor') {
 			if(isset($data['data']['inlineRadioOptions'])) {
 				unset($data['data']['inlineRadioOptions']);
 			}
@@ -17,7 +17,7 @@ class CreateExam {
 
 			die($result);
 		}
-		elseif(isset($_SESSION['uid']) && $_SESSION['login'] === true && $_SESSION['type'] === 'student') {
+		elseif(isset($_SESSION['uid']) && $_SESSION['login'] === 1 && $_SESSION['type'] === 'student') {
 			http_response_code(403);
 			die(json_encode(array(
 				"status" => -1)));

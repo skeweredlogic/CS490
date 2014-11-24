@@ -17,11 +17,12 @@ require 'ListExams.php';
 require 'GetExam.php';
 require 'StudentAnswers.php';
 require 'UserInfo.php';
+require 'ReleaseExam.php';
 
 session_start();
 $data = json_decode(file_get_contents('php://input'),true);
 $fun;
-$backend = "http://osl81.njit.edu/~rdl4/app.php";
+$backend = "http://osl82.njit.edu/~rdl4/app.php";
 
 if (!isset($data['cmd'])) {
 	http_response_code(501);
@@ -48,7 +49,7 @@ switch ($data['cmd']) {
 		break;
 	case "bank":
 		$fun = new GetBank;
-		$fun->post($backend);
+		$fun->post($data,$backend);
 		break;
 	case "createExam":
 		$fun = new CreateExam;
@@ -70,6 +71,9 @@ switch ($data['cmd']) {
 		$fun = new UserInfo;
 		$fun->post();
 		break;
+	case "release":
+		$fun = new ReleaseExam;
+		$fun->post($data,$backend);
 }
 
 http_response_code(501);

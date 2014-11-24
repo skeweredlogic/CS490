@@ -26,13 +26,18 @@ class CreateQuestion {
 				break;
 			case "code":
 				$answer = mysqli_real_escape_string($conn,$data['expectedOutput']);
+				$choice1 = mysqli_real_escape_string($conn,$data['choice1']);
+				$choice2 = mysqli_real_escape_string($conn,$data['choice2']);
+				$choice3 = NULL;
+				break;
+			case "fill":
+				$answer = mysqli_real_escape_string($conn,$data['answer']);
 				$choice1 = NULL;
 				$choice2 = NULL;
 				$choice3 = NULL;
-				break;
 		}
 
-		$result = mysqli_query($conn, "INSERT INTO bank VALUES ('$newqid','$type','$question','$answer','$feedback','$choice1','$choice2','$choice3');");
+		$result = mysqli_query($conn, "INSERT INTO bank VALUES ('$newqid','$type','$question','$answer','$feedback','$choice1','$choice2','$choice3',1);");
 		if (!$result) {
 			$status = -1;
 			$message = mysqli_error($conn);

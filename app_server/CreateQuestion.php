@@ -2,7 +2,7 @@
 class CreateQuestion {
 	
 	public function post($data, $url) {
-		if(isset($_SESSION['uid']) && $_SESSION['login'] === true && $_SESSION['type'] === "instructor") {
+		if(isset($_SESSION['uid']) && $_SESSION['login'] === 1 && $_SESSION['type'] === "instructor") {
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
@@ -32,7 +32,7 @@ class CreateQuestion {
 					"code" => $return_code)));
 			}
 		}
-		elseif(isset($_SESSION['uid']) && $_SESSION['login'] === true && $_SESSION['type'] === 'student') {
+		elseif(isset($_SESSION['uid']) && $_SESSION['login'] === 1 && $_SESSION['type'] === 'student') {
 			http_response_code(403);
 			die(json_encode(array(
 				"status" => -1)));

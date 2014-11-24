@@ -26,7 +26,7 @@ class Login {
 		curl_close($ch);
 		if ($success) {
 			$success = 1;
-			$_SESSION['login'] = true;
+			$_SESSION['login'] = 1;
 			$_SESSION['type'] = $result['role'];
 			$_SESSION['uid'] = $user;
 			$message = "success";
