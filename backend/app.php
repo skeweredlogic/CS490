@@ -30,7 +30,7 @@ if (!isset($data['cmd'])) {
 		"message" => "command field not set")));
 }
 
-$conn=mysqli_connect("sql2.njit.edu","rdl4","aBcsy1jL","rdl4");
+$conn=mysqli_connect("sql2.njit.edu","rdl4","password","rdl4");
 if (mysqli_connect_errno()) {
 	http_response_code(500);
 	die(json_encode(array(
