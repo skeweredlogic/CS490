@@ -61,6 +61,7 @@ class GetExam {
 			$return_code = (string)curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
 			$ch = curl_init();
+			unset($answers['status']);
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array("cmd" => "eid_qid")));
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -77,6 +78,9 @@ class GetExam {
 				foreach ($exam as $key => $value) {
 					$return[$i] = $bank[$key];
 					$return[$i][$key]['answered'] = $answers[$_SESSION['uid']][$data['eid']][$key];
+					if ($return[$i][$key]['answered'] == null) {
+						$return[$i][$key]['answered'] = "";
+					}
 					$return[$i][$key]['weight'] = $eid_qid[$eid][$key];
 					if ($bank[$key][$key]['type'] === "code") {
 						$prefix = "./codeqs/".$data['uid']."_".$return[0]['eid']."_".$key."_";
@@ -103,6 +107,8 @@ class GetExam {
 			if ($data['role'] === "instructor") {
 				$i = 1;
 				foreach ($exam as $key => $value) {
+					$answercount = 0;
+					$correctcount = 0;
 					$return[$i] = $bank[$key];
 					$return[$i][$key]['answered'] = $return[$i][$key]['answer'];
 					$return[$i][$key]['weight'] = $eid_qid[$eid][$key];
@@ -112,6 +118,33 @@ class GetExam {
 						$return[$i][$key]['answered'] = "";
 						$return[$i][$key]['correct'] = "yes";
 					}
+					foreach ($answers as $key2 => $value2) {
+						if (isset($value2[$data['eid']])) {
+							$studentanswer = $value2[$data['eid']][$key];
+							$correctanswer = $bank[$key][$key]['answer'];
+							if ($bank[$key][$key]['type'] === 'code') {
+								$studentanswer = str_replace(array("\n"," ","\t","\r"),"",$studentanswer);
+								$correctanswer = str_replace(array("\n"," ","\t","\r"),"",$correctanswer);
+								if (strcasecmp($studentanswer,$correctanswer) == 0) {
+									$correctcount++;
+								}
+							}
+							elseif ($bank[$key][$key]['type'] === 'fill') {
+								$studentanswer = str_replace(array("\n"," ","\t","\r"),"",$studentanswer);
+								$correctanswer = str_replace(array("\n"," ","\t","\r"),"",$correctanswer);
+								if (strcasecmp($studentanswer,$correctanswer) == 0) {
+									$correctcount++;
+								}
+							}
+							else {
+								if ($studentanswer === $correctanswer) {
+									$correctcount++;
+								}
+							}
+							$answercount++;
+						}
+					}
+					$return[$i][$key]['question'] = $return[$i][$key]['question']."&nbsp; &nbsp; <em>correct answers: ".(string)$correctcount."/".(string)$answercount."</em>";
 					$i++;
 				}
 			}

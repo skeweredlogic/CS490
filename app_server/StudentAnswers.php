@@ -102,6 +102,7 @@ class StudentAnswers {
 					$answered = str_replace(array("\n"," ","\t"),"",$value);
 					if (strcasecmp($correct,$answered) == 0) {
 						$grade = $grade + $eid_qid[$eid][$key];
+						$data['data'][$key] = $bank[$key][$key]['answer'];
 					}
 				}
 				elseif ($bank[$key][$key]['answer'] === $value) {
