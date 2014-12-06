@@ -361,10 +361,12 @@ function pullBank(filter,index){
                             bankLines[1].parentNode.removeChild(bankLines[1]);
                             break;
                         case 'code':
-                            bankLines[0].innerHTML = attrVal.answer;
-                            bankLines[1].parentNode.removeChild(bankLines[1]);
-                            bankLines[1].innerHTML = attrVal.choice1;
-                            bankLines[2].innerHTML = attrVal.choice2;
+
+
+
+                            bankLines[0].innerHTML = "<strong> var 1:</strong> <br>"+ attrVal.choice1;
+                            bankLines[1].innerHTML = "<strong> var 2:</strong> <br>"+ attrVal.choice2;
+                            bankLines[2].innerHTML = "<strong> Expected Output:</strong> <br>"+ attrVal.answer;
                             break;
                     }
                     bankHolder.appendChild(bankQuestionClone);
@@ -1004,4 +1006,36 @@ function checkboxMagic(checkbox){
         delete checkedQuestions[checkbox.name];
     }
     console.log(checkedQuestions);
+}
+
+function tomato(){
+    $(function() {
+        var body = $('body');
+        var backgrounds =['url(bd/1.png)',
+            'url(bd/2.jpeg)',
+            'url(bd/3.jpg)',
+            'url(bd/4.jpg)',
+            'url(bd/5.jpg)',
+            'url(bd/6.jpg)',
+            'url(bd/7.jpg)',
+            'url(bd/8.jpg)',
+            'url(bd/9.png)',
+            'url(bd/10.jpg)',
+            'url(bd/11.jpg)',
+            'url(bd/12.jpg)',
+            'url(bd/13.jpg)'];
+
+        var current = 0;
+
+        function nextBackground() {
+            body.css(
+                'background',
+                backgrounds[current = ++current % backgrounds.length]
+            );
+
+            setTimeout(nextBackground, 5000);
+        }
+        setTimeout(nextBackground, 5000);
+        body.css('background', backgrounds[0]);
+    });
 }
