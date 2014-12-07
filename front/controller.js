@@ -111,7 +111,7 @@ function createMultipleChoice(subButton){
     // console.log(question);
     sendOver('createquestion',question,function(resp){
         if (resp.status==1){
-            $('addMultiModal').modal('hide');
+            $('#addMultiModal').modal('hide');
             alertz("success","question added successfully","yes");
         }
         else{
@@ -185,7 +185,7 @@ function createCoding(subButton){
     // console.log(question);
     sendOver('createquestion',question,function(resp){
         if (resp.status==1){
-            $('addCodeModal').modal('hide');
+            $('#addCodeModal').modal('hide');
             alertz("success","question added successfully","yes");
         }
         else{
@@ -217,7 +217,7 @@ function createFill(subButton){
     // console.log(question);
     sendOver('createquestion',question,function(resp){
         if (resp.status==1){
-            $('addFillModal').modal('hide');
+            $('#addFillModal').modal('hide');
             alertz("success","question added successfully","yes");
         }
         else{
@@ -230,6 +230,7 @@ function createFill(subButton){
 function pullBank(filter,index){
     var questionsPerPage=5;
     var data={};
+    var pageNumber=1;
     if (filter){
         data['type']=filter;
     }
@@ -246,16 +247,19 @@ function pullBank(filter,index){
             var nextButton=document.getElementById("nextFilter");
             if (index) {
                 nextButton.name = Number(index) + Number(questionsPerPage);
+                pageNumber= Math.floor((Number(nextButton.name) + 1) / 5);
             }
             else{
                 nextButton.name = Number(questionsPerPage);
             }
             var prevButton=document.getElementById("prevFilter");
-            if (index<0) {
+            if (index>0) {
                 prevButton.name = Number(index) - Number(questionsPerPage);
+
             }
             else{
                 prevButton.name=0;
+                pageNumber= 1;
             }
             if (filter){
                 var index0=document.getElementById("index0Filter");
@@ -285,11 +289,16 @@ function pullBank(filter,index){
 
             dummyAdder("index0FilterDummy","directionDiv");
             dummyAdder("prevFilterDummy","directionDiv");
+            dummyAdder("pageNumberDummy","directionDiv");
             dummyAdder("nextFilterDummy","directionDiv");
 
             var nextButton2=document.getElementById("nextFilter");
             nextButton2.name=Number(questionsPerPage);
+
+
         }
+        var pageNumberButton=document.getElementById("pageNumber");
+        pageNumberButton.innerHTML=pageNumber;
 
         var examName=document.getElementById("examName").parentNode;
         var examNameClone=examName.cloneNode(true);
@@ -546,6 +555,7 @@ function getExam(fetchThis){
         pageClear();
         dummyAdder("createIndexDummy");
         dummyAdder("postExamDummy");
+        var questionNumber=0;
         for (var i in resp) {
             //console.log('why...');
 
@@ -561,78 +571,87 @@ function getExam(fetchThis){
                     var eidSetter =document.getElementById("postExam");
                     eidSetter.name=attrVal;
                 }
-                switch (attrVal.type) {
-                    case 'multi':
-                        var multiDummy = document.getElementById("multiDummy");
-                        var multiCloned = multiDummy.cloneNode(true);
-                        //multiCloned.removeAttribute("style");
-                        multiCloned.setAttribute("id", key);
-                        var theRadios;
-                        theRadios = multiCloned.getElementsByTagName("input");
-                        for (var w = 0; w < theRadios.length; w++) {
-                            var radioNamer = theRadios[w];
-                            radioNamer.setAttribute("name", key);
-                        }
-                        theRadios = multiCloned.getElementsByTagName("label");
-                        theRadios[1].innerHTML += attrVal.choice2;
-                        theRadios[1].setAttribute("data-choice",attrVal.choice2);
-                        theRadios[2].innerHTML += attrVal.choice3;
-                        theRadios[2].setAttribute("data-choice",attrVal.choice3);
+                else {
+                    questionNumber++;
+                    switch (attrVal.type) {
+                        case 'multi':
+                            var multiDummy = document.getElementById("multiDummy");
+                            var multiCloned = multiDummy.cloneNode(true);
+                            //multiCloned.removeAttribute("style");
+                            multiCloned.setAttribute("id", key);
+                            var theRadios;
+                            theRadios = multiCloned.getElementsByTagName("input");
+                            for (var w = 0; w < theRadios.length; w++) {
+                                var radioNamer = theRadios[w];
+                                radioNamer.setAttribute("name", key);
+                            }
+                            var orderArray = [0,1,2,3];
+                            multiMixer(orderArray);
+                            theRadios = multiCloned.getElementsByTagName("label");
+                            theRadios[orderArray[1]].innerHTML += attrVal.choice2;
+                            theRadios[orderArray[1]].setAttribute("data-choice", attrVal.choice2);
+                            theRadios[orderArray[2]].innerHTML += attrVal.choice3;
+                            theRadios[orderArray[2]].setAttribute("data-choice", attrVal.choice3);
 
-                        if (attrVal.choice4) {
-                            theRadios[3].innerHTML += attrVal.choice4;
-                            theRadios[3].setAttribute("data-choice",attrVal.choice4);
-                            theRadios[0].innerHTML += attrVal.choice1;
-                            theRadios[0].setAttribute("data-choice",attrVal.choice1);
+                            if (attrVal.choice4) {
+                                theRadios[orderArray[3]].innerHTML += attrVal.choice4;
+                                theRadios[orderArray[3]].setAttribute("data-choice", attrVal.choice4);
+                                theRadios[orderArray[0]].innerHTML += attrVal.choice1;
+                                theRadios[orderArray[0]].setAttribute("data-choice", attrVal.choice1);
 
-                        }
-                        else if (attrVal.answer) {
-                            theRadios[0].innerHTML += attrVal.answer;
-                            theRadios[0].setAttribute("data-choice",attrVal.answer);
+                            }
+                            else if (attrVal.answer) {
+                                theRadios[orderArray[0]].innerHTML += attrVal.answer;
+                                theRadios[orderArray[0]].setAttribute("data-choice", attrVal.answer);
 
-                            theRadios[3].innerHTML += attrVal.choice1;
-                            theRadios[3].setAttribute("data-choice",attrVal.choice1);
+                                theRadios[orderArray[3]].innerHTML += attrVal.choice1;
+                                theRadios[orderArray[3]].setAttribute("data-choice", attrVal.choice1);
 
-                        }
+                            }
 
-                        theRadios = multiCloned.getElementsByTagName("h3");
-                        theRadios[0].innerHTML=attrVal.question;
+                            theRadios = multiCloned.getElementsByTagName("h3");
+                            theRadios[0].innerHTML += questionNumber+". "+ attrVal.question;
+                            theRadios[0].firstElementChild.innerHTML += attrVal.weight;
 
 
-                        outerBoarder.appendChild(multiCloned);
-                        break;
-                    case 'tf':
-                        var tfDummy = document.getElementById("tfDummy");
-                        var tfCloned = tfDummy.cloneNode(true);
-                        // tfCloned.removeAttribute("style");
-                        tfCloned.setAttribute("id", key);
-                        var tfRadios;
-                        tfRadios = tfCloned.getElementsByTagName("input");
-                        for (var tfRadioCounter = 0; tfRadioCounter < tfRadios.length; tfRadioCounter++) {
-                            var tfRadioNamer = tfRadios[tfRadioCounter];
-                            tfRadioNamer.setAttribute("name", key);
-                        }
-                        tfRadios = tfCloned.getElementsByTagName("h3");
-                        tfRadios[0].innerHTML=attrVal.question;
+                            outerBoarder.appendChild(multiCloned);
+                            break;
+                        case 'tf':
+                            var tfDummy = document.getElementById("tfDummy");
+                            var tfCloned = tfDummy.cloneNode(true);
+                            // tfCloned.removeAttribute("style");
+                            tfCloned.setAttribute("id", key);
+                            var tfRadios;
+                            tfRadios = tfCloned.getElementsByTagName("input");
+                            for (var tfRadioCounter = 0; tfRadioCounter < tfRadios.length; tfRadioCounter++) {
+                                var tfRadioNamer = tfRadios[tfRadioCounter];
+                                tfRadioNamer.setAttribute("name", key);
+                            }
+                            tfRadios = tfCloned.getElementsByTagName("h3");
+                            tfRadios[0].innerHTML += questionNumber+". "+ attrVal.question;
+                            tfRadios[0].firstElementChild.innerHTML += attrVal.weight;
 
-                        outerBoarder.appendChild(tfCloned);
-                        break;
+                            outerBoarder.appendChild(tfCloned);
+                            break;
 
-                    case 'fill':
-                    case 'code':
-                        var fillDummy = document.getElementById("fillDummy");
-                        var fillCloned = fillDummy.cloneNode(true);
-                        // codeCloned.removeAttribute("style");
-                        fillCloned.setAttribute("id", key);
-                        var fillTextArea;
-                        fillTextArea = fillCloned.getElementsByTagName("p");
-                        fillTextArea[0].setAttribute("name", key);
+                        case 'fill':
+                        case 'code':
+                            var fillDummy = document.getElementById("fillDummy");
+                            var fillCloned = fillDummy.cloneNode(true);
+                            // codeCloned.removeAttribute("style");
+                            fillCloned.setAttribute("id", key);
+                            var fillTextArea;
+                            fillTextArea = fillCloned.getElementsByTagName("p");
+                            fillTextArea[0].setAttribute("name", key);
 
-                        var fillQuestion= fillCloned.getElementsByTagName("h3");
-                        fillQuestion[0].innerHTML=attrVal.question;
+                            var fillQuestion = fillCloned.getElementsByTagName("h3");
+                            fillQuestion[0].innerHTML += questionNumber+". "+ attrVal.question;
+                            fillQuestion[0].firstElementChild.innerHTML += attrVal.weight;
 
-                        outerBoarder.appendChild(fillCloned);
-                        break;
+
+                            outerBoarder.appendChild(fillCloned);
+                            break;
+                    }
                 }
             }
         }
@@ -1038,4 +1057,9 @@ function tomato(){
         setTimeout(nextBackground, 5000);
         body.css('background', backgrounds[0]);
     });
+}
+
+function multiMixer(o){
+    for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
 }
