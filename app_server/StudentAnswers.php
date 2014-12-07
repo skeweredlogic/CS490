@@ -48,18 +48,21 @@ class StudentAnswers {
 					$code = str_replace(array("&nbsp;","</div>"),"",$code);
 					preg_match('/(.*)?def (.*)?\((.*)?\):/',$value,$fname);
 					$fname = $fname[2];
-					$codestring = "import sys\n".$code."\n".$fname."(";
-					if($var1 === "" && $var2 === "") {
-						$codestring = $codestring.")";
-					}
-					elseif($var1 === "") {
-						$codestring = $codestring.$var2.")";
-					}
-					elseif($var2 === "") {
-						$codestring = $codestring.$var1.")";
-					}
-					else {
-						$codestring = $codestring.$var1.",".$var2.")";
+					$codestring = "";
+					if ($code != "") {
+						$codestring = "import sys\n".$code."\n".$fname."(";
+						if($var1 === "" && $var2 === "") {
+							$codestring = $codestring.")";
+						}
+						elseif($var1 === "") {
+							$codestring = $codestring.$var2.")";
+						}
+						elseif($var2 === "") {
+							$codestring = $codestring.$var1.")";
+						}
+						else {
+							$codestring = $codestring.$var1.",".$var2.")";
+						}
 					}
 					file_put_contents($newfile,$codestring);
 					chmod($newfile,0777);
@@ -88,12 +91,17 @@ class StudentAnswers {
 
 					$data['data'][$key] = $stdout;
 
-					if ($stderr != "") {}
+					if ($stderr != "" || $codestring == "") {}
 					else {
 						$stdout = str_replace(array("\n"," ","\t","\r"),"",$stdout);
 						$correct = str_replace(array("\n"," ","\t","\r"),"",$bank[$key][$key]['answer']);
 						if (strcasecmp($stdout,$correct) == 0) {
 							$grade = $grade + $eid_qid[$eid][$key];
+						}
+						else {
+							if ($eid_qid[$eid][$key] > 1) {
+								$grade = $grade + 1;
+							}
 						}
 					}
 				}

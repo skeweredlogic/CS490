@@ -81,7 +81,7 @@ class GetExam {
 					if ($return[$i][$key]['answered'] == null) {
 						$return[$i][$key]['answered'] = "";
 					}
-					$return[$i][$key]['weight'] = $eid_qid[$eid][$key];
+					$return[$i][$key]['weight'] = (string)$eid_qid[$eid][$key];
 					if ($bank[$key][$key]['type'] === "code") {
 						$prefix = "./codeqs/".$data['uid']."_".$return[0]['eid']."_".$key."_";
 						$code = file_get_contents($prefix."code.py");
@@ -94,8 +94,36 @@ class GetExam {
 						$return[$i][$key]['stderr'] = $stderr;
 						$stdout = str_replace(array("\n"," ","\t","\r"),"",$stdout);
 						$correct = str_replace(array("\n"," ","\t","\r"),"",$return[$i][$key]['answer']);
-						if (strcasecmp($stdout,$correct) == 0) {
+						if ($stderr != "" || $code == "") {
+							if(isset($grades[$data['uid']])) {
+								$return[$i][$key]['weight'] = "0/".$eid_qid[$eid][$key];
+							}
+						}
+						elseif (strcasecmp($stdout,$correct) == 0) {
 							$return[$i][$key]['correct'] = "yes";
+							if(isset($grades[$data['uid']])) {
+								$return[$i][$key]['weight'] = $eid_qid[$eid][$key]."/".$eid_qid[$eid][$key];
+							}
+						}
+						elseif ($eid_qid[$eid][$key] > 1) {
+							if(isset($grades[$data['uid']])) {
+								$return[$i][$key]['weight'] = "1/".$eid_qid[$eid][$key];
+							}
+						}
+						else {
+							if(isset($grades[$data['uid']])) {
+								$return[$i][$key]['weight'] = "0/".$eid_qid[$eid][$key];
+							}
+						}
+					}
+					elseif ($return[$i][$key]['answered'] === $return[$i][$key]['answer']) {
+						if(isset($grades[$data['uid']])) {
+							$return[$i][$key]['weight'] = $eid_qid[$eid][$key]."/".$eid_qid[$eid][$key];
+						}
+					}
+					else {
+						if(isset($grades[$data['uid']])) {
+							$return[$i][$key]['weight'] = "0/".$eid_qid[$eid][$key];
 						}
 					}
 					$i++;
